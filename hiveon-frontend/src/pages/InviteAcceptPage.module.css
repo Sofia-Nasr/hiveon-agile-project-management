@@ -1,0 +1,14 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f9fafb;
+  text-align: center;
+}
+
+.error {
+  color: #b91c1c;
+  margin-top: 12px;
+}

@@ -1,0 +1,22 @@
+/* src/layouts/MainLayout.module.css */
+
+.layout {
+  display: flex;
+}
+
+.content {
+  margin-left: var(--sidebar-width, 240px); /* 🔑 bound to sidebar width */
+  flex: 1;
+  min-height: 100vh;
+  background: #fff;
+  padding: 1.5rem;
+  transition: margin-left 0.25s ease;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}

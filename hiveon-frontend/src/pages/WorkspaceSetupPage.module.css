@@ -1,0 +1,166 @@
+.container {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #fffbe6, #fff1b8);
+  font-family: 'Poppins', sans-serif;
+}
+
+.card {
+  width: 420px;
+  background: #fff;
+  padding: 32px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  border: 2px solid #fbc02d;
+}
+
+
+.divider {
+  display: none;
+}
+
+.iconWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.hexagonIcon {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+
+
+
+/* TEXT */
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-align: center;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+/* WORKSPACE LIST */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.workspaceItem {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.workspaceItem:hover {
+  background: #fff7cc;
+  border-color: #fbc02d;
+}
+
+/* DIVIDER */
+.divider {
+  text-align: center;
+  margin: 18px 0;
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* CREATE / JOIN */
+.createBox {
+  
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+
+
+}
+.input {
+  margin-top: 8px;
+}
+
+
+.input {
+  height: 44px;                 /* same as button */
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.createBox {
+  display: grid;
+  grid-template-columns: 1fr auto;  /* 👈 input grows, button fits */
+  gap: 10px;
+  margin-top: 16px;
+  align-items: center;
+}
+.createBtn:hover {
+  background: #fbc02d;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #fbc02d;
+  background: #fff;
+}
+
+.createBtn {
+  height: 44px;                 
+  padding: 0 16px;             
+  border-radius: 10px;
+  background: linear-gradient(90deg, #fdd835, #fbc02d);
+  color: #000;
+  font-weight: 500;             /* calmer, matches inputs */
+  font-size: 14px;              /* SAME as input */
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;          /* prevents wrapping */
+}
+
+
+.createBtn:disabled {
+  opacity: 0.6;
+}
+
+/* STATES */
+.loading,
+.empty {
+  font-size: 14px;
+  color: #64748b;
+  text-align: center;
+}
+
+.error {
+  margin-top: 14px;
+  color: #b91c1c;
+  font-size: 13px;
+  text-align: center;
+}
+.section {
+  margin-top: 18px;
+}
+
+.createBox {
+  display: flex;
+  gap: 10px;
+}
+
+
+

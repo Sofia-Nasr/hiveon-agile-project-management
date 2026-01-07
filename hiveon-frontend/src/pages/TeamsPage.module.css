@@ -1,0 +1,392 @@
+/* src/pages/TeamsPage.module.css */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* ───────────────── Toolbar (project + create team) ───────────────── */
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background: #fffbeb;          /* soft yellow */
+  border: 1px solid #facc15;    /* theme border */
+}
+
+.toolbarRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.projectPicker {
+  min-width: 220px;
+}
+
+/* card for the create-team form */
+.newTeamCard {
+  margin-top: 0.25rem;
+  border-radius: 0.9rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0.9rem 1rem 1rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.newTeamHeaderRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+  margin-bottom: 0.6rem;
+}
+
+.newTeamTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.newTeamHint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* generic field group inside the create-team card */
+.fieldGroup {
+  margin-top: 0.6rem;
+}
+
+/* actions row at bottom of create-team form */
+.newTeamActions {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ───────────────── Generic form bits ───────────────── */
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.6rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.85rem;
+  outline: none;
+  background: #ffffff;
+}
+
+.input:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 1px #facc15;
+}
+
+/* currently selected lead display row */
+.selectedLeadRow {
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.selectedLeadName {
+  color: #111827;
+}
+
+.clearLeadBtn {
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.1rem 0.25rem;
+}
+
+/* ───────────────── Buttons ───────────────── */
+
+.primaryBtn {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: #facc15;
+  color: #111827;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.primaryBtn:hover {
+  background: #eab308;
+  transform: translateY(-1px);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.smallBtn,
+.smallDangerBtn {
+  padding: 0.25rem 0.55rem;
+  border-radius: 0.4rem;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.smallBtn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.smallBtn:hover {
+  background: #d1d5db;
+}
+
+.smallDangerBtn {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.smallDangerBtn:hover {
+  background: #fee2e2;
+}
+
+/* ───────────────── Empty states ───────────────── */
+
+.empty {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.emptySmall {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ───────────────── Teams list / cards ───────────────── */
+
+.teamsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.teamCard {
+  border-radius: 0.9rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0.75rem 0.9rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  border-left: 4px solid #facc15;   /* theme accent */
+}
+
+.teamHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+/* Left side of header: name + lead info */
+
+.teamHeaderLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.teamNameDisplay {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.teamNameInput {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.teamNameInput:focus {
+  border-color: #111827;
+}
+
+/* Edit/view buttons on right */
+
+.teamHeaderButtons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Team id under header */
+
+.teamId {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+/* Team lead (view mode) */
+
+.teamLeadDisplayRow {
+  display: flex;
+  gap: 0.25rem;
+  align-items: baseline;
+  font-size: 0.8rem;
+}
+
+.teamLeadLabel {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.teamLeadValue {
+  color: #111827;
+}
+
+/* Team lead (edit mode) */
+
+.teamLeadEditRow {
+  margin-top: 0.35rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.teamLeadSelect {
+  flex: 1;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.teamLeadSelect:focus {
+  border-color: #111827;
+}
+
+/* ───────────────── Members section ───────────────── */
+
+.membersSection {
+  margin-top: 0.6rem;
+}
+
+.membersHeader {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f59e0b;        /* warm yellow/orange */
+  margin-bottom: 0.25rem;
+}
+
+.membersList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.memberItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.memberItem:last-child {
+  border-bottom: none;
+}
+
+.memberEmail {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.removeMemberBtn {
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.1rem 0.25rem;
+}
+
+/* ───────────────── Add member (search) ───────────────── */
+
+.addMemberSection {
+  margin-top: 0.65rem;
+  position: relative;
+}
+
+.searchDropdown {
+  position: relative;
+  margin-top: 0.35rem;
+  border-radius: 0.6rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.08);
+}
+
+.searchHint {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.searchResultItem {
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.searchResultItem:hover {
+  background: #fffbeb;
+}

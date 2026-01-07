@@ -1,0 +1,171 @@
+/* ===============================
+   EPIC CARD — KANBAN (SPRINT STYLE)
+   =============================== */
+
+.card {
+  position: relative;
+  border-radius: 14px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  cursor: pointer;
+}
+
+/* ❌ remove hover lift */
+.card:hover {
+  transform: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ❌ disable all accent variants */
+[class^="accent_"] {
+  border-left: none !important;
+  background: #ffffff !important;
+}
+
+/* ===== TOP ROW ===== */
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.code {
+  font-size: 0.7rem;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 6px;
+  background: #f9fafb;
+}
+
+.topRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== STATUS (NEUTRAL) ===== */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  box-shadow: none;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6b7280;
+}
+
+/* ❌ kill colored status variants */
+[class^="status_"] {
+  color: #374151 !important;
+}
+[class^="status_"] .statusDot {
+  background: #6b7280 !important;
+}
+
+/* ===== MAIN TEXT ===== */
+
+.title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.desc {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* ===== FOOTER ===== */
+
+.footer {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ===== PRIORITY (NEUTRAL) ===== */
+
+.pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+/* ❌ remove priority colors */
+.pill_high,
+.pill_medium,
+.pill_low {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+/* ===== ASSIGNEE ===== */
+
+.assignee {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avatar,
+.avatarFallback {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+}
+
+.assigneeName {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* ===== REFRESH BUTTON (SUBTLE) ===== */
+
+.refreshBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.refreshBtn:hover {
+  color: #374151;
+}

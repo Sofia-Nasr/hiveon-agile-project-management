@@ -1,0 +1,116 @@
+.wrapper {
+  position: relative;
+  margin: 12px;
+}
+
+.current {
+  width: 100%;
+  padding: 10px 14px;
+  background: #facc15; /* match sidebar yellow */
+  border: 2px solid #000;
+  color: #000;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.current:hover {
+  background: #fde047;
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+}
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+    background: linear-gradient(135deg, #fffbe6, #fff1b8);           
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 100;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border: 1px solid #e5e7eb;          /* subtle edge */
+}
+.sectionTitle {
+  color: #6b7280;
+}
+
+.item:hover {
+  background: #fff7cc;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.item {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: #111827;
+}
+
+.item:hover {
+  background: #f3f4f6;
+}
+.active {
+  background: #fde047;
+  color: #000;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 11px;
+  color: #6b7280;
+}
+.createBlock {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;     /* 👈 STACK VERTICALLY */
+  gap: 8px;
+
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 8px;
+}
+
+.input {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  color: #111827;
+}
+
+.createBtn {
+  height: 40px;
+  width: 100%;               /* 👈 FULL WIDTH UNDER INPUT */
+  border-radius: 8px;
+
+  background: #facc15;
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+
+  border: none;
+  cursor: pointer;
+}

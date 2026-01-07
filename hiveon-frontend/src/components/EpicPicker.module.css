@@ -1,0 +1,9 @@
+.pickerWrap { display:flex; align-items:center; gap:8px; }
+.label { font-weight:700; color:#374151; }
+.select {
+  min-width: 240px; padding:8px 10px; border-radius:10px; border:1px solid #e5e7eb;
+  background:#fff; outline:none;
+}
+.manageLink, .createLink { font-weight:700; text-decoration:none; color:#1e40af; }
+.emptyText { color:#6b7280; margin-right:8px; }
+.skeleton { width:260px; height:38px; background:#f3f4f6; border-radius:10px; }

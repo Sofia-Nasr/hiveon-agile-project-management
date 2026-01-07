@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.db
+bin/
+obj/
+
+# React frontend
+hiveon-frontend/node_modules
+hiveon-frontend/.env
+
+# .NET backend
+HiveonBackend/bin/
+HiveonBackend/obj/
+HiveonBackend/appsettings.Development.json
+
+# General
+*.log
+.DS_Store

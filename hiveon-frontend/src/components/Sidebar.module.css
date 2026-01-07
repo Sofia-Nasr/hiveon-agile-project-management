@@ -1,0 +1,183 @@
+/* src/components/Sidebar.module.css */
+
+.sidebar {
+  width: var(--sidebar-width, 240px);
+  height: 100vh;
+  position: fixed;
+  inset: 0 auto 0 0;
+  background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+  transition: width 0.25s ease;
+  z-index: 30;
+}
+
+
+.collapsed {
+  width: 80px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoSymbol {
+  font-size: 20px;
+}
+
+.logoText {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.collapseBtn {
+  border: 0;
+  background: rgba(255, 255, 255, 0.45);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.collapseBtn:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.nav {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.navItem:hover {
+  background: rgba(255, 221, 87, 0.55);
+}
+
+.active {
+  background: #f5a124;
+}
+
+.navIcon {
+  font-size: 18px;
+}
+
+.navLabel {
+  font-size: 14px;
+}
+
+/* 🟡 CREATE TICKET BUTTON */
+.createTicketBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #fff8c6;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1f2937;
+}
+
+.createTicketBtn:hover {
+  background: #fff3a0;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.signout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff1a8;
+  color: #1f2937;
+  padding: 10px 12px;
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.signout:hover {
+  filter: brightness(1.03);
+}
+/* Make sidebar full-height column */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header stays fixed */
+.header {
+  flex-shrink: 0;
+}
+
+/* THIS enables scrolling */
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Footer stays fixed */
+.footer {
+  flex-shrink: 0;
+}
+.inviteBtn {
+  width: calc(100% - 24px);
+  margin: 12px;
+  height: 44px;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  cursor: pointer;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.inviteBtn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(251, 192, 45, 0.8);
+}
+
+.inviteBtn:active {
+  transform: translateY(1px);
+}
