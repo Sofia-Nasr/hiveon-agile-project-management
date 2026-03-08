@@ -86,8 +86,8 @@ namespace HiveonBackend.Controllers
         public IActionResult GoogleLogin()
         {
             var clientId = _config["Google:ClientId"];
-            var redirectUri = _config["Google:RedirectUri"];
-            var scope = "openid email profile";
+            var redirectUri = _config["Google:LoginRedirectUri"];
+            var scope = "openid email profile https://www.googleapis.com/auth/calendar.events";
 
             var url = "https://accounts.google.com/o/oauth2/v2/auth" +
                       "?response_type=code" +
@@ -118,7 +118,7 @@ namespace HiveonBackend.Controllers
 
             var clientId = _config["Google:ClientId"];
             var clientSecret = _config["Google:ClientSecret"];
-            var redirectUri = _config["Google:RedirectUri"];
+            var redirectUri = _config["Google:LoginRedirectUri"];
 
             using var http = new HttpClient();
 
@@ -172,6 +172,12 @@ namespace HiveonBackend.Controllers
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
             }
+            // Save Google tokens for calendar / meet creation
+            user.GoogleAccessToken = googleTokens.access_token;
+            user.GoogleRefreshToken = googleTokens.refresh_token;
+            user.GoogleTokenExpiry = DateTime.UtcNow.AddSeconds(googleTokens.expires_in);
+
+            await _context.SaveChangesAsync();
 
             // 🔑 ROLE IS ALWAYS PENDING HERE
             var roleName = "Pending";

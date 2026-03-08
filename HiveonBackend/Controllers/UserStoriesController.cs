@@ -67,8 +67,12 @@ namespace HiveonBackend.Controllers
          Status = s.Status,
 
          AssigneeId = s.AssigneeId,
-         AssigneeName = s.Assignee != null ? s.Assignee.Username : null,
-
+         AssigneeName = s.Assignee != null
+    ? s.Assignee.Username ?? s.Assignee.Name
+    : null,
+         AssigneeEmail = s.Assignee != null
+    ? s.Assignee.Email
+    : null,
 
          CreatedAt = s.CreatedAt
      })

@@ -1,11 +1,12 @@
 ﻿using HiveonBackend.Data;
+using HiveonBackend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -100,9 +101,7 @@ builder.Logging.SetMinimumLevel(LogLevel.Debug);
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks();
 builder.Services.AddScoped<IEmailService, EmailService>();
-
-
-
+builder.Services.AddScoped<GoogleCalendarService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

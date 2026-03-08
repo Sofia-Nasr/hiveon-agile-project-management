@@ -19,6 +19,8 @@ import { useAuth } from "../context/AuthContext";
 import styles from "./Sidebar.module.css";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import InviteUsersModal from "../components/InviteUsersModal";
+import { FaExclamationTriangle } from "react-icons/fa";
+import { FaVideo } from "react-icons/fa";
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
@@ -150,6 +152,20 @@ export default function Sidebar() {
             active={isActive("/boards")}
             collapsed={collapsed}
           />
+          <NavLink
+  to="/meetings"
+  label="Meetings"
+  icon={<FaVideo />}
+  active={isActive("/meetings")}
+  collapsed={collapsed}
+/>
+<NavLink
+  to="/risks"
+  label="Risk Analysis"
+  icon={<FaExclamationTriangle />}
+  active={isActive("/risks")}
+  collapsed={collapsed}
+/>
 
           <NavLink
             to="/support"

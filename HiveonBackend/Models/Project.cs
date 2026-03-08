@@ -24,6 +24,8 @@ namespace HiveonBackend.Models
         public ICollection<Sprint> Sprints { get; set; } = new List<Sprint>();
         public ICollection<Epic> Epics { get; set; } = new List<Epic>();
         public ICollection<Team> Teams { get; set; } = new List<Team>();
+        public ICollection<ProjectRisk> Risks { get; set; } = new List<ProjectRisk>();
+
         public ICollection<UserStory> UserStories { get; set; } = new List<UserStory>();
     }
 }

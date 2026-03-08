@@ -22,5 +22,10 @@ namespace HiveonBackend.Models
        
 
         public string? Name { get; internal set; }
+
+        public string? GoogleAccessToken { get; set; }
+        public string? GoogleRefreshToken { get; set; }
+        public DateTime? GoogleTokenExpiry { get; set; }
+
     }
 }

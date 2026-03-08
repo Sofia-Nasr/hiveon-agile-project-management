@@ -197,6 +197,46 @@
 .columnBodyOver {
   background: #fffbea;
 }
+/* ===== Bottom Sheet variant for detail card ===== */
+
+.bottomSheetCard {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: min(1100px, calc(100vw - 32px));
+  max-height: calc(100vh - 96px);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Optional small handle */
+.sheetHandleWrap {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 0;
+}
+
+.sheetHandle {
+  width: 54px;
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+/* Make the middle scroll, keep comments pinned */
+.bottomSheetBody {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Comments pinned at bottom of sheet */
+.bottomSheetComments {
+  border-top: 1px solid #eee;
+  background: #fff;
+}
 
 /* CARDS */
 

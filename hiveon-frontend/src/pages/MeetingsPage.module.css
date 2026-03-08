@@ -1,0 +1,310 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  background: #fffbeb;
+  min-height: calc(100vh - 64px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* GRID */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.9rem;
+}
+
+/* CARD */
+
+.card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  padding: 0.8rem 0.9rem 0.7rem;
+  border-left: 4px solid #facc15;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.todayBadge {
+  font-size: 0.7rem;
+  background: #fef3c7;
+  border: 1px solid #facc15;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  color: #92400e;
+}
+
+.cardDescription {
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meetLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #b45309;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* MODAL */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.modal {
+  width: 100%;
+  max-width: 620px;
+
+  background: #ffffff;
+  border-radius: 1.1rem;
+  border: 2px solid #facc15;
+
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+
+  padding: 1.8rem 2rem 1.6rem;
+
+  max-height: 85vh;      /* prevents overflow */
+  overflow-y: auto;      /* enables scrolling */
+}
+.input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #facc15;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.35);
+}
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.modalTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.modalSubtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.7rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.textarea {
+  min-height: 80px;
+  resize: none;
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.column {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Buttons reused from projects */
+
+.primaryBtn {
+  padding: 0.45rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: #facc15;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ghostBtn {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.participantList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.participantChip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  cursor: pointer;
+  background: #f9fafb;
+  transition: all 0.15s ease;
+}
+
+.participantChip:hover {
+  background: #fef3c7;
+  border-color: #facc15;
+}
+
+.participantSelected {
+  background: #fef3c7;
+  border-color: #facc15;
+  color: #92400e;
+  font-weight: 500;
+}
+.deleteBtn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+}
+.readMore {
+  border: none;
+  background: none;
+  color: #b45309;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 2px;
+}
+.card {
+  position: relative;
+}
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cardDescription {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #555;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.expanded {
+  -webkit-line-clamp: unset;
+  display: block;
+}
+.liveJoin{
+  background:#22c55e;
+  color:white;
+  padding:6px 10px;
+  border-radius:6px;
+  display:inline-block;
+  margin-top:8px;
+}
+
+.countdown{
+  font-size:12px;
+  color:#ff9800;
+  margin-top:4px;
+  display:block;
+}

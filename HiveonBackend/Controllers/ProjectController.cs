@@ -48,6 +48,7 @@ namespace HiveonBackend.Controllers
         // ============================================
         // CREATE PROJECT (workspace scoped)
         // ============================================
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] ProjectCreateDto dto)
@@ -87,6 +88,7 @@ namespace HiveonBackend.Controllers
                 StartDate = dto.StartDate == default ? DateTime.UtcNow : dto.StartDate,
                 EndDate = dto.EndDate,
                 WorkspaceId = wsId
+
             };
 
             _db.Projects.Add(project);
@@ -134,7 +136,80 @@ namespace HiveonBackend.Controllers
                 })
                 .ToListAsync();
 
+
+
             return Ok(projects);
+        }
+        [HttpGet("{projectId:guid}/members")]
+        [Authorize]
+        public async Task<IActionResult> GetProjectMembers(Guid projectId)
+        {
+            try
+            {
+                if (!TryGetUserId(out var userId))
+                    return Unauthorized("Invalid user.");
+
+                if (!TryGetWorkspaceId(out var wsId))
+                    return Unauthorized("Workspace not selected.");
+
+                var wsUser = await _db.WorkspaceUsers
+                    .FirstOrDefaultAsync(wu => wu.WorkspaceId == wsId && wu.UserId == userId);
+
+                if (wsUser == null)
+                    return StatusCode(403, "You are not a member of this workspace.");
+
+                var project = await _db.Projects
+                    .FirstOrDefaultAsync(p => p.Id == projectId && p.WorkspaceId == wsId);
+
+                if (project == null)
+                    return NotFound("Project not found in this workspace.");
+
+                var allowedRoles = new[] { "ScrumMaster", "ProductOwner", "Developer" };
+                if (!allowedRoles.Contains(wsUser.Role))
+                    return StatusCode(403, "You are not allowed to view meeting participants.");
+
+                var projectMembers = await _db.ProjectMembers
+                    .Where(pm => pm.ProjectId == projectId)
+                    .Select(pm => new
+                    {
+                        id = pm.UserId,
+                        username = pm.User.Username,
+                        email = pm.User.Email,
+                        workspaceRole = (string)null
+                    })
+                    .ToListAsync();
+
+                var scrumMasters = await _db.WorkspaceUsers
+                    .Where(wu => wu.WorkspaceId == wsId && wu.Role == "ScrumMaster")
+                    .Select(wu => new
+                    {
+                        id = wu.UserId,
+                        username = wu.User.Username,
+                        email = wu.User.Email,
+                        workspaceRole = wu.Role
+                    })
+                    .ToListAsync();
+
+                var merged = projectMembers
+                    .Concat(scrumMasters)
+                    .GroupBy(x => x.id)
+                    .Select(g => g.First())
+                    .Select(x => new
+                    {
+                        id = x.id,
+                        name = !string.IsNullOrWhiteSpace(x.username) ? x.username : x.email,
+                        email = x.email,
+                        role = x.workspaceRole
+                    })
+                    .OrderBy(x => x.name)
+                    .ToList();
+
+                return Ok(merged);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

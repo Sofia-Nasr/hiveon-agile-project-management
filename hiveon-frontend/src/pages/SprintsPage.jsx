@@ -6,6 +6,7 @@ import NewSprintModal from "./NewSprintModal";
 import styles from "./SprintsPage.module.css";
 import SprintPlanningModal from "./SprintPlanningModal";
 import backlogStyles from "./BacklogPage.module.css";
+import CommentsSection from "../components/CommentsSection";
 
 import {
   DndContext,
@@ -124,11 +125,13 @@ const normalizedStories = storiesRes.data.map(s => ({
   epicName: s.epicName,
   targetForSprint: s.targetForSprint,
   acceptanceCriteria: s.acceptanceCriteria,
+  assigneeEmail: s.assigneeEmail, 
   storyPoints: s.storyPoints,
 }));
 
 const normalizedTasks = (tasksRes.data || []).map(t => ({
   ...t,
+   assigneeEmail: t.assigneeEmail,
   ticketType: t.type,
   type: t.type ?? "Bug",
 }));
@@ -303,7 +306,7 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
               className={styles.newBtnAlt}
               onClick={() => setShowNewSprint(true)}
             >
-              ✨ Plan Sprint
+               Plan Sprint
             </button>
           )}
 
@@ -401,17 +404,21 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
           onCreated={fetchSprints}
         />
       )}
-
-      {/* ===== Ticket Detail Overlay (reused from Backlog) ===== */}
+      {/* ===== Ticket Detail Overlay (Bottom Drawer) ===== */}
       {selectedTask && (
         <div
           className={backlogStyles.detailOverlay}
           onClick={() => setSelectedTask(null)}
         >
           <div
-            className={backlogStyles.detailCard}
+            className={`${backlogStyles.detailCard} ${backlogStyles.bottomSheetCard}`}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* little handle like your screenshot */}
+            <div className={backlogStyles.sheetHandleWrap}>
+              <div className={backlogStyles.sheetHandle} />
+            </div>
+
             <div className={backlogStyles.detailHeader}>
               <div>
                 <div className={backlogStyles.detailTypeRow}>
@@ -432,9 +439,7 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
                     #{String(selectedTask.id).slice(0, 8)}
                   </span>
                 </div>
-                <h2 className={backlogStyles.detailTitle}>
-                  {selectedTask.title}
-                </h2>
+                <h2 className={backlogStyles.detailTitle}>{selectedTask.title}</h2>
               </div>
 
               <button
@@ -445,149 +450,158 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
               </button>
             </div>
 
-            <div className={backlogStyles.detailBody}>
-<div className={backlogStyles.detailSection}>
-  <h4 className={backlogStyles.detailSectionTitle}>Summary</h4>
+            {/* scrollable content area */}
+            <div className={backlogStyles.bottomSheetBody}>
+              <div className={backlogStyles.detailBody}>
+                <div className={backlogStyles.detailSection}>
+                  <h4 className={backlogStyles.detailSectionTitle}>Summary</h4>
 
-  <p className={backlogStyles.detailDescription}>
-    {selectedTask.description || (
-      <span className={backlogStyles.detailEmpty}>No description</span>
-    )}
-  </p>
+                  <p className={backlogStyles.detailDescription}>
+                    {selectedTask.description || (
+                      <span className={backlogStyles.detailEmpty}>No description</span>
+                    )}
+                  </p>
 
-  <div className={backlogStyles.detailGrid}>
-    <DetailItem label="Type" value={selectedTask.ticketType} />
-    <DetailItem label="Priority" value={selectedTask.priority || "Medium"} />
-    <DetailItem label="Status" value={selectedTask.status || "To Do"} />
-    <DetailItem
-      label="Assignee"
-      value={selectedTask.assigneeName || "Unassigned"}
-    />
-  </div>
-</div>
-{selectedTask.ticketType === "UserStory" && (
-  <div className={backlogStyles.detailSection}>
-    <h4 className={backlogStyles.detailSectionTitle}>User Story Details</h4>
+                  <div className={backlogStyles.detailGrid}>
+                    <DetailItem label="Type" value={selectedTask.ticketType} />
+                    <DetailItem label="Priority" value={selectedTask.priority || "Medium"} />
+                    <DetailItem label="Status" value={selectedTask.status || "To Do"} />
+                    <DetailItem
+                      label="Assignee"
+                      value={selectedTask.assigneeName || "Unassigned"}
+                    />
+                  </div>
+                </div>
 
-    <div className={backlogStyles.detailGrid}>
-      <DetailItem
-        label="Story Points"
-        value={selectedTask.storyPoints ?? "—"}
-      />
-     
-        <DetailItem
-  label="Epic"
-  value={selectedTask.epicName || "—"}
+                {selectedTask.ticketType === "UserStory" && (
+                  <div className={backlogStyles.detailSection}>
+                    <h4 className={backlogStyles.detailSectionTitle}>User Story Details</h4>
+
+                    <div className={backlogStyles.detailGrid}>
+                      <DetailItem label="Story Points" value={selectedTask.storyPoints ?? "—"} />
+                      <DetailItem label="Epic" value={selectedTask.epicName || "—"} />
+                      <DetailItem
+                        label="Target for Sprint"
+                        value={selectedTask.targetForSprint || "—"}
+                      />
+                    </div>
+
+                    <div className={backlogStyles.detailSpan2}>
+                      <div className={backlogStyles.detailLabel}>Acceptance Criteria</div>
+                      <div>{selectedTask.acceptanceCriteria || "—"}</div>
+                    </div>
+                  </div>
+                )}
+
+                {selectedTask.ticketType === "Bug" && (
+                  <div className={backlogStyles.detailSection}>
+                    <h4 className={backlogStyles.detailSectionTitle}>Bug Details</h4>
+
+                    <div className={backlogStyles.detailGrid}>
+                      <DetailItem label="Severity" value={selectedTask.severity || "—"} />
+                      <DetailItem label="Probability" value={selectedTask.probability || "—"} />
+                      <DetailItem label="Environment" value={selectedTask.environment || "—"} />
+                      <DetailItem
+                        label="Build Caused Crash"
+                        value={selectedTask.buildCrash ? "Yes" : "No"}
+                      />
+                      <DetailItem
+                        label="Production Impacted"
+                        value={selectedTask.productionImpacted ? "Yes" : "No"}
+                      />
+                      <DetailItem
+                        label="Trending End Date"
+                        value={
+                          selectedTask.trendingEndDate
+                            ? new Date(selectedTask.trendingEndDate).toLocaleDateString()
+                            : "—"
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {selectedTask.ticketType === "Epic" && (
+                  <div className={backlogStyles.detailSection}>
+                    <h4 className={backlogStyles.detailSectionTitle}>Epic Planning</h4>
+
+                    <div className={backlogStyles.detailGrid}>
+                      <DetailItem
+                        label="Effort Estimate"
+                        value={selectedTask.effortEstimate ?? "—"}
+                      />
+                      <DetailItem
+                        label="Revenue Impact"
+                        value={selectedTask.revenueImpact ?? "—"}
+                      />
+                      <DetailItem
+                        label="Start Date"
+                        value={
+                          selectedTask.startDate
+                            ? new Date(selectedTask.startDate).toLocaleDateString()
+                            : "—"
+                        }
+                      />
+                      <DetailItem
+                        label="End Date"
+                        value={
+                          selectedTask.endDate
+                            ? new Date(selectedTask.endDate).toLocaleDateString()
+                            : "—"
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {selectedTask.ticketType === "Support" && (
+                  <div className={backlogStyles.detailSection}>
+                    <h4 className={backlogStyles.detailSectionTitle}>Planning</h4>
+
+                    <div className={backlogStyles.detailGrid}>
+                      <DetailItem
+                        label="Planned Start"
+                        value={
+                          selectedTask.plannedStart
+                            ? new Date(selectedTask.plannedStart).toLocaleDateString()
+                            : "—"
+                        }
+                      />
+                      <DetailItem
+                        label="Planned End"
+                        value={
+                          selectedTask.plannedEnd
+                            ? new Date(selectedTask.plannedEnd).toLocaleDateString()
+                            : "—"
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* pinned comments drawer at the bottom of the sheet */}
+            <div className={backlogStyles.bottomSheetComments}>
+  <CommentsSection
+  entityId={selectedTask.id}
+  entityType={
+    selectedTask.ticketType === "UserStory"
+      ? "UserStory"
+      : selectedTask.ticketType === "Epic"
+      ? "Epic"
+      : "TaskItem"
+  }
+  assigneeName={selectedTask.assigneeName || ""}
+  assigneeEmail={selectedTask.assigneeEmail || ""}
 />
-
-      <DetailItem
-  label="Target for Sprint"
-  value={selectedTask.targetForSprint || "—"}
-
-/>
-
-    </div>
-
-    <div className={backlogStyles.detailSpan2}>
-      <div className={backlogStyles.detailLabel}>Acceptance Criteria</div>
-      <div>{selectedTask.acceptanceCriteria || "—"}</div>
-    </div>
-  </div>
-)}
-{selectedTask.ticketType === "Bug" && (
-  <div className={backlogStyles.detailSection}>
-    <h4 className={backlogStyles.detailSectionTitle}>Bug Details</h4>
-
-    <div className={backlogStyles.detailGrid}>
-      <DetailItem label="Severity" value={selectedTask.severity || "—"} />
-      <DetailItem label="Probability" value={selectedTask.probability || "—"} />
-      <DetailItem
-        label="Environment"
-        value={selectedTask.environment || "—"}
-      />
-      <DetailItem
-        label="Build Caused Crash"
-        value={selectedTask.buildCrash ? "Yes" : "No"}
-      />
-      <DetailItem
-        label="Production Impacted"
-        value={selectedTask.productionImpacted ? "Yes" : "No"}
-      />
-      <DetailItem
-        label="Trending End Date"
-        value={
-          selectedTask.trendingEndDate
-            ? new Date(selectedTask.trendingEndDate).toLocaleDateString()
-            : "—"
-        }
-      />
-    </div>
-  </div>
-)}
-{selectedTask.ticketType === "Epic" && (
-  <div className={backlogStyles.detailSection}>
-    <h4 className={backlogStyles.detailSectionTitle}>Epic Planning</h4>
-
-    <div className={backlogStyles.detailGrid}>
-      <DetailItem
-        label="Effort Estimate"
-        value={selectedTask.effortEstimate ?? "—"}
-      />
-      <DetailItem
-        label="Revenue Impact"
-        value={selectedTask.revenueImpact ?? "—"}
-      />
-      <DetailItem
-        label="Start Date"
-        value={
-          selectedTask.startDate
-            ? new Date(selectedTask.startDate).toLocaleDateString()
-            : "—"
-        }
-      />
-      <DetailItem
-        label="End Date"
-        value={
-          selectedTask.endDate
-            ? new Date(selectedTask.endDate).toLocaleDateString()
-            : "—"
-        }
-      />
-    </div>
-  </div>
-)}
-{selectedTask.ticketType === "Support" && (
-  <div className={backlogStyles.detailSection}>
-    <h4 className={backlogStyles.detailSectionTitle}>Planning</h4>
-
-    <div className={backlogStyles.detailGrid}>
-      <DetailItem
-        label="Planned Start"
-        value={
-          selectedTask.plannedStart
-            ? new Date(selectedTask.plannedStart).toLocaleDateString()
-            : "—"
-        }
-      />
-      <DetailItem
-        label="Planned End"
-        value={
-          selectedTask.plannedEnd
-            ? new Date(selectedTask.plannedEnd).toLocaleDateString()
-            : "—"
-        }
-      />
-    </div>
-  </div>
-)}
             </div>
           </div>
         </div>
       )}
-    </div>
+</div>
   );
 }
-
 // ================= COMPONENTS =================
 
 function SprintColumn({ id, title, items, children }) {

@@ -4,6 +4,7 @@ using HiveonBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HiveonBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304171804_AddMeetingsTable")]
+    partial class AddMeetingsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,10 +213,6 @@ namespace HiveonBackend.Migrations
                     b.Property<bool>("IsCancelled")
                         .HasColumnType("bit");
 
-                    b.Property<string>("MeetingLink")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
@@ -230,28 +229,6 @@ namespace HiveonBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Meetings");
-                });
-
-            modelBuilder.Entity("HiveonBackend.Models.MeetingParticipant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("HasJoined")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MeetingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MeetingId");
-
-                    b.ToTable("MeetingParticipants");
                 });
 
             modelBuilder.Entity("HiveonBackend.Models.Notification", b =>
@@ -620,15 +597,6 @@ namespace HiveonBackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GoogleAccessToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GoogleRefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("GoogleTokenExpiry")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -902,17 +870,6 @@ namespace HiveonBackend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HiveonBackend.Models.MeetingParticipant", b =>
-                {
-                    b.HasOne("HiveonBackend.Models.Meeting", "Meeting")
-                        .WithMany("Participants")
-                        .HasForeignKey("MeetingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Meeting");
-                });
-
             modelBuilder.Entity("HiveonBackend.Models.Notification", b =>
                 {
                     b.HasOne("HiveonBackend.Models.User", "User")
@@ -1164,11 +1121,6 @@ namespace HiveonBackend.Migrations
             modelBuilder.Entity("Epic", b =>
                 {
                     b.Navigation("UserStories");
-                });
-
-            modelBuilder.Entity("HiveonBackend.Models.Meeting", b =>
-                {
-                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("HiveonBackend.Models.Project", b =>

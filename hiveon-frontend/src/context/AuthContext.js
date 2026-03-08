@@ -80,22 +80,36 @@ export function AuthProvider({ children }) {
     return true;
   }
 
-  useEffect(() => {
-    const saved = localStorage.getItem("token");
-    if (saved) applyToken(saved, { allowWorkspace: true });
-    setInitializing(false);
-  }, []);
+useEffect(() => {
+  const saved = localStorage.getItem("token");
+  if (saved) applyToken(saved, { allowWorkspace: false }); // ignore workspace
+  setInitializing(false);
+}, []);
+ const login = (input) => {
+  const jwt = typeof input === "string" ? input : input?.token;
+  if (!jwt || typeof jwt !== "string") return;
 
-  // 🔒 LOGIN NEVER restores workspace
-  const login = (input) => {
-    const jwt = typeof input === "string" ? input : input?.token;
-    if (!jwt || typeof jwt !== "string") return;
+  localStorage.setItem("token", jwt);
+if (!applyToken(jwt, { allowWorkspace: false })) logout();
+};
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
 
-    localStorage.setItem("token", jwt);
-    if (!applyToken(jwt, { allowWorkspace: false })) logout();
-  };
+  const tokenFromGoogle = params.get("token");
+  const requiresWorkspace = params.get("requiresWorkspace");
+  const activeWorkspaceId = params.get("activeWorkspaceId");
 
-  // ✅ WORKSPACE SWITCH / JOIN
+  if (tokenFromGoogle) {
+    login(tokenFromGoogle);
+
+    // clean URL
+    window.history.replaceState({}, document.title, "/");
+// Always force workspace selection
+window.location.href = "/workspace-setup";
+  }
+}, []);
+
+  // WORKSPACE SWITCH / JOIN
   const selectWorkspace = (jwt) => {
     localStorage.setItem("token", jwt);
     applyToken(jwt, { allowWorkspace: true });

@@ -262,11 +262,13 @@ namespace HiveonBackend.Controllers
                     t.Status,
                     t.Priority,
                     t.SprintId,
-
                     t.AssigneeId,
                     assigneeName = t.Assignee != null
-                        ? t.Assignee.Username ?? t.Assignee.Name
-                        : null,
+    ? t.Assignee.Username ?? t.Assignee.Name
+    : null,
+                    assigneeEmail = t.Assignee != null
+    ? t.Assignee.Email
+    : null,
 
                     t.TeamId,
                     t.StoryPoints,

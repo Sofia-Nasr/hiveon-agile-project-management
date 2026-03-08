@@ -24,7 +24,7 @@ namespace HiveonBackend.DTOs
         public string? EpicName { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
-      
+        public string? AssigneeEmail { get; set; }
 
         public int StoryPoints { get; set; }
         public int Order { get; set; }

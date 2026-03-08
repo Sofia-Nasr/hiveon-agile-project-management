@@ -1,0 +1,165 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.header {
+  font-weight: 800;
+  font-size: 13px;
+  padding: 12px 16px 8px;
+  color: #6b7280;
+}
+
+.list {
+  padding: 0 16px 8px;
+  max-height: 160px;       /* ✅ keep it tidy like screenshot */
+  overflow-y: auto;        /* ✅ only comments scroll, not whole sheet */
+}
+
+.empty {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 6px 0 10px;
+}
+
+.comment {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.contentWrap {
+  flex: 1;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.author {
+  font-weight: 700;
+}
+
+.time {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.deleteBtn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.text {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mention {
+  background: #e0f2fe;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+/* Input bar */
+.inputBar {
+  padding: 10px 16px 14px;
+  border-top: 1px solid #f1f5f9;
+  background: #fff;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  resize: none;
+  border-radius: 14px;
+  border: 2px solid #facc15; /* yellow border like screenshot */
+  padding: 12px 44px 12px 12px; /* right padding for send icon */
+  font-size: 14px;
+  outline: none;
+  background: #ffffff;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+}
+
+/* Send inside box */
+.sendBtn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  background: transparent;
+  color: #111827;
+}
+
+.sendBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Suggestions dropdown */
+.suggestions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 56px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  z-index: 30;
+}
+
+.suggestionItem {
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.suggestionItem:hover {
+  background: #f9fafb;
+}
+
+.suggestionMeta {
+  color: #6b7280;
+  font-size: 12px;
+}

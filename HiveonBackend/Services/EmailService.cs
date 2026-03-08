@@ -1,16 +1,10 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
-
 public interface IEmailService
 {
-    Task SendInviteEmail(
-        string toEmail,
-        string workspaceName,
-        string inviteUrl,
-        string joinCode,
-        string role
-    );
+    Task SendInviteEmail(string toEmail, string workspaceName, string inviteUrl, string joinCode, string role);
+    Task SendMentionEmail(string toEmail, string commentContent, string entityType, string entityId);
 }
 
 public class EmailService : IEmailService
@@ -30,16 +24,7 @@ public class EmailService : IEmailService
         string role
     )
     {
-        var smtp = new SmtpClient
-        {
-            Host = _config["Email:SmtpHost"],
-            Port = int.Parse(_config["Email:SmtpPort"]),
-            EnableSsl = true,
-            Credentials = new NetworkCredential(
-                _config["Email:Username"],
-                _config["Email:Password"]
-            )
-        };
+        var smtp = BuildSmtpClient();
 
         var message = new MailMessage
         {
@@ -56,10 +41,7 @@ Role assigned: {role}
 Join code:
 {joinCode}
 
-Or click the link below:
-{inviteUrl}
 
-This invitation expires in 7 days.
 
 — Hiveon Team
 ",
@@ -69,5 +51,55 @@ This invitation expires in 7 days.
         message.To.Add(toEmail);
 
         await smtp.SendMailAsync(message);
+    }
+
+    public async Task SendMentionEmail(
+        string toEmail,
+        string commentContent,
+        string entityType,
+        string entityId
+    )
+    {
+        var smtp = BuildSmtpClient();
+
+        var frontendUrl = _config["Frontend:BaseUrl"]; 
+        var link = $"{frontendUrl}/sprints"; 
+
+        var message = new MailMessage
+        {
+            From = new MailAddress(
+                _config["Email:FromEmail"],
+                _config["Email:FromName"]
+            ),
+            Subject = "You were mentioned on Hiveon",
+            Body = $@"
+You were mentioned in a comment on Hiveon.
+
+Comment:
+""{commentContent}""
+
+
+— Hiveon
+",
+            IsBodyHtml = false
+        };
+
+        message.To.Add(toEmail);
+
+        await smtp.SendMailAsync(message);
+    }
+
+    private SmtpClient BuildSmtpClient()
+    {
+        return new SmtpClient
+        {
+            Host = _config["Email:SmtpHost"],
+            Port = int.Parse(_config["Email:SmtpPort"]),
+            EnableSsl = true,
+            Credentials = new NetworkCredential(
+                _config["Email:Username"],
+                _config["Email:Password"]
+            )
+        };
     }
 }

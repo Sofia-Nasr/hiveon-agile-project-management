@@ -16,11 +16,18 @@ public class AppDbContext : DbContext
     public DbSet<Epic> Epics { get; set; }
     public DbSet<UserStory> UserStories { get; set; }
     public DbSet<Team> Teams { get; set; }
+
     public DbSet<TeamMember> TeamMembers { get; set; }
+    public DbSet<ProjectRisk> ProjectRisks { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<CommentMention> CommentMentions { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<GoogleConnection> GoogleConnections { get; set; }
+    public DbSet<Meeting> Meetings { get; set; }
     public DbSet<Workspace> Workspaces { get; set; }
     public DbSet<WorkspaceUser> WorkspaceUsers { get; set; }
     public DbSet<WorkspaceInvitation> WorkspaceInvitations { get; set; }
-
+    public DbSet<MeetingParticipant> MeetingParticipants { get; set; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -216,6 +223,120 @@ public class AppDbContext : DbContext
               .HasForeignKey(t => t.AssigneeId)
               .OnDelete(DeleteBehavior.SetNull);
         });
+
+        // ProjectRisk
+        b.Entity<ProjectRisk>(rb =>
+        {
+            rb.HasKey(r => r.Id);
+
+            rb.Property(r => r.Title)
+              .IsRequired()
+              .HasMaxLength(250);
+
+            rb.Property(r => r.Category)
+              .IsRequired()
+              .HasMaxLength(80);
+
+            rb.Property(r => r.Probability)
+              .IsRequired()
+              .HasMaxLength(20);
+
+            rb.Property(r => r.Impact)
+              .IsRequired()
+              .HasMaxLength(20);
+
+            rb.Property(r => r.Status)
+              .IsRequired()
+              .HasMaxLength(30);
+
+            rb.Property(r => r.Consequence)
+              .HasMaxLength(500);
+
+            rb.HasOne(r => r.Project)
+              .WithMany(p => p.Risks)   
+              .HasForeignKey(r => r.ProjectId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+            rb.HasOne(r => r.OwnerUser)
+              .WithMany()
+              .HasForeignKey(r => r.OwnerUserId)
+              .OnDelete(DeleteBehavior.SetNull);
+
+            rb.HasIndex(r => new { r.ProjectId, r.Status });
+        });
+
+        // -------------------- COMMENTS --------------------
+        b.Entity<Comment>(cb =>
+        {
+            cb.HasKey(c => c.Id);
+
+            cb.Property(c => c.EntityType)
+              .IsRequired()
+              .HasMaxLength(50);
+
+            cb.Property(c => c.Content)
+              .IsRequired()
+              .HasMaxLength(4000);
+
+            cb.HasOne(c => c.AuthorUser)
+              .WithMany()
+              .HasForeignKey(c => c.AuthorUserId)
+              .OnDelete(DeleteBehavior.Restrict);
+
+            cb.HasIndex(c => new { c.WorkspaceId, c.ProjectId, c.EntityType, c.EntityId });
+        });
+
+        // COMMENT MENTIONS 
+        b.Entity<CommentMention>(mb =>
+        {
+            mb.HasKey(m => m.Id);
+
+            mb.HasOne(m => m.Comment)
+              .WithMany()
+              .HasForeignKey(m => m.CommentId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+            mb.HasOne(m => m.MentionedUser)
+              .WithMany()
+              .HasForeignKey(m => m.MentionedUserId)
+              .OnDelete(DeleteBehavior.Restrict);
+
+            mb.HasIndex(m => new { m.CommentId, m.MentionedUserId })
+              .IsUnique();
+        });
+        //google connections
+        b.Entity<GoogleConnection>()
+    .HasOne(gc => gc.User)
+    .WithMany()
+    .HasForeignKey(gc => gc.UserId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+        // NOTIFICATIONS 
+        b.Entity<Notification>(nb =>
+        {
+            nb.HasKey(n => n.Id);
+
+            nb.Property(n => n.Type)
+              .IsRequired()
+              .HasMaxLength(30);
+
+            nb.Property(n => n.EntityType)
+              .IsRequired()
+              .HasMaxLength(50);
+
+            nb.Property(n => n.Message)
+              .IsRequired()
+              .HasMaxLength(500);
+
+            nb.HasOne(n => n.User)
+              .WithMany()
+              .HasForeignKey(n => n.UserId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+            nb.HasIndex(n => new { n.WorkspaceId, n.UserId, n.IsRead, n.CreatedAt });
+        });
+
+
 
         // Seed Roles
         b.Entity<Role>().HasData(

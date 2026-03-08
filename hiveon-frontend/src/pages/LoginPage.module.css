@@ -121,3 +121,24 @@
 .toggleIcon:hover {
   color: #000;
 }
+.participants {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.participantList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.participantItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f9fafb;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}

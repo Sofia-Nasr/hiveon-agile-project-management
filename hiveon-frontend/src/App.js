@@ -17,6 +17,9 @@ import PmDashboard from "./pages/PmDashboard";
 import ProjectsPage from "./pages/ProjectsPage";
 import OAuthSuccessPage from "./pages/OAuthSuccessPage";
 import HomePage from "./pages/HomePage";
+import RiskAnalysisPage from "./pages/RiskAnalysisPage";
+import MeetingsPage from "./pages/MeetingsPage";
+
 
 function PrivateRoute({ children }) {
   const { token, initializing } = useAuth();
@@ -165,7 +168,30 @@ export default function App() {
           }
         />
 
-        
+        <Route
+  path="/risks"
+  element={
+    <PrivateRoute>
+      <WorkspaceRequired>
+        <MainLayout>
+          <RiskAnalysisPage />
+        </MainLayout>
+      </WorkspaceRequired>
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/meetings"
+  element={
+    <PrivateRoute>
+      <WorkspaceRequired>
+        <MainLayout>
+          <MeetingsPage />
+        </MainLayout>
+      </WorkspaceRequired>
+    </PrivateRoute>
+  }
+/>
 
         {/* DEFAULT */}
         <Route path="/" element={<PublicOnly><HomePage /></PublicOnly>} />

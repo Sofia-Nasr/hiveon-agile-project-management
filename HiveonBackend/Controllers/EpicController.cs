@@ -119,7 +119,7 @@ public class EpicController : ControllerBase
         });
     }
 
-    // ================= CREATE =================
+    // CREATE 
     [HttpPost]
     [Authorize(Roles = "ProductOwner,ScrumMaster")]
     public async Task<IActionResult> Create([FromBody] EpicCreateDto dto, CancellationToken ct)
@@ -158,7 +158,7 @@ public class EpicController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = epic.Id }, epic);
     }
 
-    // ================= PATCH STATUS =================
+   // PATCH STATUS
     public record EpicStatusDto(string Status, int? Order);
 
     [HttpPatch("{id:guid}/status")]

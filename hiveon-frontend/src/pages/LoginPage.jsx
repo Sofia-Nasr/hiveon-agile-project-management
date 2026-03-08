@@ -14,22 +14,29 @@ export default function LoginPage() {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+async function handleLogin(e) {
+  e.preventDefault();
+  setMessage("");
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    setMessage("");
+  try {
+    const res = await api.post("/auth/login", { email, password });
 
-    try {
-      const res = await api.post("/auth/login", { email, password });
+    const { token, requiresWorkspace, activeWorkspaceId } = res.data;
 
-      login(res.data);
+    login(token);
 
+    if (requiresWorkspace) {
       navigate("/workspace-setup", { replace: true });
-    } catch (err) {
-      setMessage("❌ " + (err.response?.data?.message || "Login failed"));
+    } else if (activeWorkspaceId) {
+      navigate("/projects", { replace: true });
+    } else {
+      navigate("/workspace-setup", { replace: true });
     }
-  }
 
+  } catch (err) {
+    setMessage("❌ " + (err.response?.data?.message || "Login failed"));
+  }
+}
   function handleGoogleLogin() {
     window.location.href = "https://localhost:7028/api/auth/google";
   }
