@@ -1,4 +1,6 @@
-﻿namespace HiveonBackend.Models
+﻿using System.Diagnostics.Eventing.Reader;
+
+namespace HiveonBackend.Models
 {
     public class MeetingParticipant
     {
@@ -7,6 +9,7 @@
         public Guid MeetingId { get; set; }
 
         public Guid UserId { get; set; }
+
 
         public bool HasJoined { get; set; }
 

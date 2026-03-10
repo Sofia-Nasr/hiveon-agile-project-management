@@ -4,35 +4,40 @@
   background: #ffffff;
 }
 
+/* Header */
 .header {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 13px;
-  padding: 12px 16px 8px;
+  padding: 14px 18px 10px;
   color: #6b7280;
+  letter-spacing: .4px;
 }
 
+/* Comments list */
 .list {
-  padding: 0 16px 8px;
-  max-height: 160px;       /* ✅ keep it tidy like screenshot */
-  overflow-y: auto;        /* ✅ only comments scroll, not whole sheet */
+  padding: 0 18px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .empty {
   font-size: 13px;
   color: #9ca3af;
-  margin: 6px 0 10px;
+  margin: 10px 0;
 }
 
+/* Individual comment */
 .comment {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
+/* Avatar */
 .avatar {
   width: 32px;
   height: 32px;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #e0f2fe;
   color: #1e3a8a;
   display: flex;
@@ -40,12 +45,15 @@
   justify-content: center;
   font-weight: 800;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
+/* Content */
 .contentWrap {
   flex: 1;
 }
 
+/* Top row */
 .topRow {
   display: flex;
   align-items: center;
@@ -55,6 +63,7 @@
 
 .author {
   font-weight: 700;
+  color: #111827;
 }
 
 .time {
@@ -62,6 +71,7 @@
   font-size: 11px;
 }
 
+/* Delete button */
 .deleteBtn {
   margin-left: auto;
   background: none;
@@ -69,14 +79,22 @@
   cursor: pointer;
   font-size: 12px;
   color: #ef4444;
+  opacity: 0.6;
 }
 
+.deleteBtn:hover {
+  opacity: 1;
+}
+
+/* Comment text */
 .text {
-  margin-top: 4px;
+  margin-top: 5px;
   font-size: 14px;
   line-height: 1.45;
+  color: #374151;
 }
 
+/* Mention */
 .mention {
   background: #e0f2fe;
   padding: 2px 6px;
@@ -87,43 +105,55 @@
 
 /* Input bar */
 .inputBar {
-  padding: 10px 16px 14px;
+  padding: 14px 18px 18px;
   border-top: 1px solid #f1f5f9;
   background: #fff;
 }
 
+/* Wrapper so send button sits inside */
 .inputWrapper {
   position: relative;
 }
 
+/* Text area */
 .input {
   width: 100%;
   resize: none;
   border-radius: 14px;
-  border: 2px solid #facc15; /* yellow border like screenshot */
-  padding: 12px 44px 12px 12px; /* right padding for send icon */
+  border: 2px solid #facc15;
+  padding: 14px 48px 14px 14px;
   font-size: 14px;
   outline: none;
   background: #ffffff;
+  min-height: 48px;
+}
+
+.input::placeholder {
+  color: #9ca3af;
 }
 
 .input:focus {
   box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
 }
 
-/* Send inside box */
+/* Send button INSIDE input */
 .sendBtn {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
   font-weight: 900;
   background: transparent;
   color: #111827;
+  font-size: 16px;
+}
+
+.sendBtn:hover {
+  background: #f9fafb;
 }
 
 .sendBtn:disabled {
@@ -140,7 +170,7 @@
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
   padding: 6px;
   z-index: 30;
 }

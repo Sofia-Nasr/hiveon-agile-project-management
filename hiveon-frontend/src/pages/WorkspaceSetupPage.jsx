@@ -120,39 +120,43 @@ export default function WorkspaceSetupPage() {
             You are not part of any workspace yet.
           </div>
         )}
+<div className={styles.section}>
+  <div className={styles.createBox}>
+    <input
+      placeholder="New workspace name"
+      value={newName}
+      onChange={(e) => setNewName(e.target.value)}
+      className={styles.input}
+    />
 
-        <div className={styles.section}>
-          <input
-            placeholder="New workspace name"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            className={styles.input}
-          />
-          <button
-            onClick={handleCreate}
-            disabled={creating}
-            className={styles.createBtn}
-          >
-            {creating ? "Creating…" : "Create workspace"}
-          </button>
-        </div>
+    <button
+      onClick={handleCreate}
+      disabled={creating}
+      className={styles.createBtn}
+    >
+      {creating ? "Creating…" : "Create workspace"}
+    </button>
+  </div>
+</div>
 
-        <div className={styles.section}>
-          <input
-            placeholder="Enter join code"
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value)}
-            className={styles.input}
-          />
-          <button
-            onClick={joinWorkspace}
-            disabled={joining}
-            className={styles.createBtn}
-          >
-            {joining ? "Joining…" : "Join workspace"}
-          </button>
-        </div>
+<div className={styles.section}>
+  <div className={styles.createBox}>
+    <input
+      placeholder="Enter join code"
+      value={joinCode}
+      onChange={(e) => setJoinCode(e.target.value)}
+      className={styles.input}
+    />
 
+    <button
+      onClick={joinWorkspace}
+      disabled={joining}
+      className={styles.createBtn}
+    >
+      {joining ? "Joining…" : "Join workspace"}
+    </button>
+  </div>
+</div>
         {error && <div className={styles.error}>{error}</div>}
       </div>
     </div>

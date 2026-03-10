@@ -367,14 +367,23 @@ function getOwnerName(ownerUserId) {
               />
 
               <div className={styles.actions}>
-                <button type="button" onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" disabled={saving}>
-                  {saving ? "Adding..." : "Add Risk"}
-                </button>
-              </div>
-            </form>
+  <button
+    type="submit"
+    className={styles.primaryBtn}
+    disabled={saving}
+  >
+    {saving ? "Adding…" : "Add Risk"}
+  </button>
+
+  <button
+    type="button"
+    className={styles.ghostBtn}
+    onClick={closeModal}
+    disabled={saving}
+  >
+    Cancel
+  </button>
+</div></form>
           </div>
         </div>
       )}

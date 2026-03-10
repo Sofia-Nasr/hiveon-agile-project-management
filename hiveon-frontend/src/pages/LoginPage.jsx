@@ -44,7 +44,10 @@ async function handleLogin(e) {
   return (
     <div className={styles.container}>
       <form onSubmit={handleLogin} className={styles.form}>
-        <h2 className={styles.title}>🐝 Hiveon Login</h2>
+     <h2 className={styles.title}>
+  <span className={styles.hexIcon}></span>
+  <span>Hiveon Login</span>
+</h2>
 
         <p className={styles.footerText}>
           Don’t have an account?{" "}

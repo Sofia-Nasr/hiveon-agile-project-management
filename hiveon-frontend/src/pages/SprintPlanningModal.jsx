@@ -152,7 +152,10 @@ async function confirm() {
                  onChange={() => toggle(i)}
                   disabled={sprint.status === "Completed"}
                 />
-                <span className={styles.type}>{i.ticketType}</span>
+                <span className={`${styles.type} ${styles[i.ticketType]}`}>
+  {i.ticketType}
+</span>
+
                 <span className={styles.title}>{i.title}</span>
                 <span className={styles.priority}>{i.priority}</span>
               </label>

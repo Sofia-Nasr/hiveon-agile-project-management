@@ -28,46 +28,44 @@ namespace HiveonBackend.Controllers
                 throw new UnauthorizedAccessException("Workspace not selected.");
             return wsId;
         }
-
         [HttpGet("pm")]
-        public async Task<IActionResult> GetPmDashboard()
+        public async Task<IActionResult> GetPmDashboard([FromQuery] Guid projectId) 
         {
             var wsId = GetWorkspaceId();
 
-            var projectIds = await _db.Projects
-                .Where(p => p.WorkspaceId == wsId)
-                .Select(p => p.Id)
-                .ToListAsync();
+            var pid = projectId;
 
             var today = DateTime.UtcNow.Date;
 
             // ---------------- KPI ----------------
 
             var totalTickets =
-                await _db.Tasks.CountAsync(t => projectIds.Contains(t.ProjectId)) +
-                await _db.UserStories.CountAsync(s => projectIds.Contains(s.ProjectId));
+                await _db.Tasks.CountAsync(t => t.ProjectId == projectId) +
+                await _db.UserStories.CountAsync(s => s.ProjectId == projectId);
 
             var productionBugs = await _db.Tasks.CountAsync(t =>
-                projectIds.Contains(t.ProjectId) &&
+                t.ProjectId == projectId &&
                 t.Type == "Bug" &&
                 t.ProductionImpacted == true);
 
             var completedToday = await _db.Tasks.CountAsync(t =>
-                projectIds.Contains(t.ProjectId) &&
-                t.CompletedAt != null &&
-                t.CompletedAt.Value.Date == today);
-
+       t.ProjectId == projectId &&
+       t.CompletedAt != null &&
+       t.CompletedAt.Value.Date == today);
             var activeSprint = await _db.Sprints
-                .Where(s => s.Status == "Active" && projectIds.Contains(s.ProjectId))
-                .OrderByDescending(s => s.StartDate)
-                .Select(s => new
-                {
-                    s.Id,
-                    s.Name,
-                    s.StartDate,
-                    s.EndDate
-                })
-                .FirstOrDefaultAsync();
+     .Where(s =>
+         s.ProjectId == projectId &&
+         (s.Status == "Active" || s.Status == "Planned"))
+     .OrderByDescending(s => s.StartDate)
+     .Select(s => new
+     {
+         s.Id,
+         s.Name,
+         s.Status,
+         s.StartDate,
+         s.EndDate
+     })
+     .FirstOrDefaultAsync();
 
             var velocity = 0;
 
@@ -83,7 +81,7 @@ namespace HiveonBackend.Controllers
             // ---------------- RISKS ----------------
 
             var risks = await _db.ProjectRisks
-                .Where(r => r.WorkspaceId == wsId && r.Status != "Closed")
+                .Where(r => r.ProjectId == projectId && r.Status != "Closed")
                 .OrderByDescending(r => r.CreatedAt)
                 .Take(5)
                 .Select(r => new
@@ -98,10 +96,10 @@ namespace HiveonBackend.Controllers
             // ---------------- MEETINGS ----------------
 
             var meetings = await _db.Meetings
-                .Where(m =>
-                    m.WorkspaceId == wsId &&
-                    m.StartTime > DateTime.UtcNow &&
-                    !m.IsCancelled)
+               .Where(m =>
+    m.ProjectId == projectId &&
+    m.StartTime > DateTime.UtcNow &&
+    !m.IsCancelled)
                 .OrderBy(m => m.StartTime)
                 .Take(5)
                 .Select(m => new

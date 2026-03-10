@@ -9,7 +9,7 @@ import api from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import ProjectPicker from "../components/ProjectPicker";
 import styles from "./BacklogPage.module.css";
-
+import CommentsSection from "../components/CommentsSection";
 // ---- Helpers ----
 
 function getTypeLabel(ticketType) {
@@ -320,6 +320,7 @@ export default function BacklogPage() {
                   <span className={styles.detailEmpty}>No description</span>
                 )}
               </p>
+              
 
               <div className={styles.detailGrid}>
                 <div>
@@ -399,12 +400,29 @@ export default function BacklogPage() {
     </div>
   </>
 )}
+</div>
+</div>
+ {/* COMMENTS SECTION (fixed bottom) */}
+      <div className={styles.detailComments}>
+        <CommentsSection
+          entityId={selectedItem.id}
+          entityType={
+            selectedItem.ticketType === "UserStory"
+              ? "UserStory"
+              : selectedItem.ticketType === "Epic"
+              ? "Epic"
+              : "TaskItem"
+          }
+          assigneeName={selectedItem.assigneeName || ""}
+          assigneeEmail={selectedItem.assigneeEmail || ""}
+        />
 
-              </div>
             </div>
           </div>
         </div>
+        
       )}
+      
     </div>
   );
 }

@@ -1,29 +1,39 @@
-/* ===============================
-   EPIC CARD — KANBAN (SPRINT STYLE)
-   =============================== */
-
 .card {
   position: relative;
   border-radius: 14px;
   padding: 14px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  cursor: pointer;
+  transition: box-shadow .15s ease, transform .15s ease;
 }
 
-/* ❌ remove hover lift */
 .card:hover {
-  transform: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+.accent_todo {
+  border-left: 4px solid #94a3b8;
 }
 
-/* ❌ disable all accent variants */
-[class^="accent_"] {
-  border-left: none !important;
-  background: #ffffff !important;
+.accent_inprogress {
+  border-left: 4px solid #3b82f6;
 }
 
+.accent_testing {
+  border-left: 4px solid #f59e0b;
+}
+
+.accent_inreview {
+  border-left: 4px solid #8b5cf6;
+}
+
+.accent_done {
+  border-left: 4px solid #22c55e;
+}
+
+.accent_blocked {
+  border-left: 4px solid #ef4444;
+}
 /* ===== TOP ROW ===== */
 
 .topRow {

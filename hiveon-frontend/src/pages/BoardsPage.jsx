@@ -57,33 +57,34 @@ const loadBoard = useCallback(async () => {
       api.get("/userstories", { params: { projectId } }),
     ]);
 
-    // Normalize User Stories
-    const stories = (storiesRes.data || [])
-      .filter(s => s.teamId === teamId) // IMPORTANT
-      .map(s => ({
-        id: s.id,
-        title: s.title,
-        description: s.description,
-        status: s.status ?? "To Do",
-        order: s.order ?? 0,
-        priority: s.priority,
-        assigneeId: s.assigneeId,
-        type: "UserStory",
-      }));
-
+const stories = (storiesRes.data || [])
+  .filter(s => !teamId || !s.teamId || s.teamId === teamId)
+  .map(s => ({
+    id: s.id,
+    title: s.title,
+    description: s.description,
+    status: s.status ?? "To Do",
+    order: s.order ?? 0,
+    priority: s.priority,
+    assigneeId: s.assigneeId,
+    assigneeName: s.assigneeName,
+    targetForSprint: s.targetForSprint,
+    type: "UserStory",
+  }));
     // Normalize Tasks (Bug / Support)
-    const tasks = (tasksRes.data || [])
-      .filter(t => t.teamId === teamId)
-      .map(t => ({
-        id: t.id,
-        title: t.title,
-        description: t.description,
-        status: t.status ?? "To Do",
-        order: t.order ?? 0,
-        priority: t.priority,
-        assigneeId: t.assigneeId,
-        type: t.type, // Bug | Support
-      }));
+const tasks = (tasksRes.data || [])
+  .filter(t => t.teamId === teamId)
+  .map(t => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    status: t.status ?? "To Do",
+    order: t.order ?? 0,
+    priority: t.priority,
+    assigneeId: t.assigneeId,
+    assigneeName: t.assigneeName,   
+    type: t.type,
+  }));
 
     setItems([...stories, ...tasks]);
   } catch (err) {

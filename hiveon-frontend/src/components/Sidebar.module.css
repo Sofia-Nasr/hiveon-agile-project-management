@@ -5,7 +5,7 @@
   height: 100vh;
   position: fixed;
   inset: 0 auto 0 0;
-  background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
+background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
   color: #1f2937;
   display: flex;
   flex-direction: column;
@@ -15,10 +15,13 @@
 }
 
 
-.collapsed {
-  width: 80px;
+.collapsed .navItem {
+  justify-content: center;
+  padding: 10px 0;
 }
-
+.collapsed .navIcon {
+  margin: 0;
+}
 .brand {
   display: flex;
   align-items: center;
@@ -54,7 +57,7 @@
 }
 
 .collapseBtn:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgb(217, 223, 120);
 }
 
 .nav {
@@ -74,14 +77,11 @@
   color: #1f2937;
   font-weight: 600;
 }
-
-.navItem:hover {
-  background: rgba(255, 221, 87, 0.55);
-}
-
 .active {
-  background: #f5a124;
+  background: #fff1a8;
+  border-left: 3px solid #eb9e22;
 }
+
 
 .navIcon {
   font-size: 18px;
@@ -180,4 +180,35 @@
 
 .inviteBtn:active {
   transform: translateY(1px);
+}
+.collapsed .navLabel {
+  display: none;
+}
+
+.collapsed .logoText {
+  display: none;
+}
+
+.collapsed .navItem {
+  justify-content: center;
+}
+
+.collapsed .createTicketBtn {
+  justify-content: center;
+}
+.logoSymbol {
+  width: 30px;
+  height: 30px;
+  color: #080808;
+}
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+
+.nav::-webkit-scrollbar {
+  display: none;
 }

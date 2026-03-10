@@ -7,6 +7,42 @@
   font-family: 'Poppins', sans-serif;
 }
 
+.hexIcon {
+  width: 35px;
+  height: 35px;
+  position: relative;
+  display: inline-block;
+}
+
+.hexIcon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #f59e0b;
+  clip-path: polygon(
+    50% 0%,
+    93% 25%,
+    93% 75%,
+    50% 100%,
+    7% 75%,
+    7% 25%
+  );
+}
+
+.hexIcon::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: white; /* match card background */
+  clip-path: polygon(
+    50% 0%,
+    93% 25%,
+    93% 75%,
+    50% 100%,
+    7% 75%,
+    7% 25%
+  );
+}
 .form {
   background: #fff;
   padding: 2rem;
@@ -17,13 +53,19 @@
   gap: 0.75rem;
   border: 2px solid #fbc02d;
 }
-
 .title {
-  margin: 0;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #333;
+  color: #1f2937;
+
+  margin-bottom: 8px;
 }
+
 
 .input {
   padding: 10px;

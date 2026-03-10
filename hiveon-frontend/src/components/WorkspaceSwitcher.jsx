@@ -7,8 +7,8 @@ import {
   switchWorkspace,
 } from "../api/workspaceApi";
 import { useAuth } from "../context/AuthContext";
-
-export default function WorkspaceSwitcher() {
+import { FaSitemap } from "react-icons/fa";
+  export default function WorkspaceSwitcher({ collapsed }) {
   const { workspaceId, login } = useAuth();
 
   const [open, setOpen] = useState(false);
@@ -46,22 +46,19 @@ export default function WorkspaceSwitcher() {
   }, []);
 
   // SWITCH WORKSPACE (JWT regen)
-  async function handleSwitch(wsId) {
-    try {
-      const res = await switchWorkspace(wsId);
+ async function handleSwitch(wsId) {
+  try {
+    const res = await switchWorkspace(wsId);
 
-      // APPLY NEW JWT (contains workspaceId claim)
-      login(res.token);
+    // apply new JWT
+    login(res.token);
 
-      setOpen(false);
+    setOpen(false);
 
-      // hard reload scoped data
-      window.location.href = "/projects";
-    } catch (err) {
-      console.error("Failed to switch workspace", err);
-    }
+  } catch (err) {
+    console.error("Failed to switch workspace", err);
   }
-
+}
   // CREATE WORKSPACE → auto switch
   async function handleCreate() {
     if (!newName.trim()) return;
@@ -88,17 +85,20 @@ export default function WorkspaceSwitcher() {
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
-      <button
-        className={styles.current}
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen((o) => !o);
-        }}
-      >
-        <span className={styles.name}>{currentName}</span>
-        <span className={styles.chevron}>▾</span>
-      </button>
+     <button
+  className={styles.current}
+  onClick={(e) => {
+    e.stopPropagation();
+    setOpen((o) => !o);
+  }}
+>
+<FaSitemap className={styles.icon} />
+  {!collapsed && (
+    <span className={styles.name}>{currentName}</span>
+  )}
 
+  <span className={styles.chevron}>▾</span>
+</button>
       {open && (
         <div
           className={styles.panel}

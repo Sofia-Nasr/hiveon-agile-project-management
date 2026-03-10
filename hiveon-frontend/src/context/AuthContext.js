@@ -81,8 +81,16 @@ export function AuthProvider({ children }) {
   }
 
 useEffect(() => {
-  const saved = localStorage.getItem("token");
-  if (saved) applyToken(saved, { allowWorkspace: false }); // ignore workspace
+const saved = localStorage.getItem("token");
+
+if (saved) {
+  const valid = applyToken(saved, { allowWorkspace: false });
+
+  if (!valid) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("workspaceId");
+  }
+}
   setInitializing(false);
 }, []);
  const login = (input) => {
@@ -98,15 +106,15 @@ useEffect(() => {
   const tokenFromGoogle = params.get("token");
   const requiresWorkspace = params.get("requiresWorkspace");
   const activeWorkspaceId = params.get("activeWorkspaceId");
+if (tokenFromGoogle) {
+  login(tokenFromGoogle);
 
-  if (tokenFromGoogle) {
-    login(tokenFromGoogle);
+  // clean URL
+  window.history.replaceState({}, document.title, "/");
 
-    // clean URL
-    window.history.replaceState({}, document.title, "/");
-// Always force workspace selection
-window.location.href = "/workspace-setup";
-  }
+  // ALWAYS go to workspace selection
+  window.location.href = "/workspace-setup";
+}
 }, []);
 
   // WORKSPACE SWITCH / JOIN

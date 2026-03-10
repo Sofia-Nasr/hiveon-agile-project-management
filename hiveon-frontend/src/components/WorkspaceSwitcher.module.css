@@ -103,7 +103,7 @@
 
 .createBtn {
   height: 40px;
-  width: 100%;               /* 👈 FULL WIDTH UNDER INPUT */
+  width: 100%;              
   border-radius: 8px;
 
   background: #facc15;
@@ -113,4 +113,33 @@
 
   border: none;
   cursor: pointer;
+}
+.collapsed .current {
+  justify-content: center;
+}
+.icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+.current {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.chevron {
+  margin-left: auto;
+}
+
+.collapsed .current {
+  justify-content: center;
+  gap: 4px;
+}
+.panel {
+  min-width: 220px;
 }

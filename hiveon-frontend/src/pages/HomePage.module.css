@@ -2,6 +2,7 @@
 .wrap {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
   /* softer, footer-like gradient */
   background: radial-gradient(
     circle at top,
@@ -156,7 +157,6 @@
   text-align: center;
   padding: 6rem 2rem 8rem;
   width: 100vw;
-  margin-left: calc(-50vw + 50%);
   background: linear-gradient(
     135deg,
     rgba(255, 251, 235, 0.98) 0%,

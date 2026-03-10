@@ -505,18 +505,7 @@ namespace HiveonBackend.Controllers
             return NoContent();
         }
 
-        [HttpGet("{sprintId:guid}/risk")]
-        [Authorize]
-        public async Task<IActionResult> GetSprintRisk(
-            Guid sprintId,
-            [FromServices] Services.SprintRiskAiService ai)
-        {
-            if (!TryGetWorkspaceId(out var wsId, out var err))
-                return err;
-
-            var result = await ai.AnalyzeAsync(sprintId, wsId);
-            return Ok(result);
-        }
+       
 
 
 

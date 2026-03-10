@@ -297,29 +297,29 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
           <h1 className={styles.h1}>Sprint Planning · {projectName}</h1>
           <p className={styles.sub}>Sprint board & execution</p>
         </div>
+<div className={styles.headerRight}>
+  <div className={styles.toolbar}>
+    <ProjectPicker value={projectId} onChange={setProjectId} />
 
-        <div className={styles.headerRight}>
-          <ProjectPicker value={projectId} onChange={setProjectId} />
+    {isScrumMaster && (
+      <button
+        className={styles.primaryBtn}
+        onClick={() => setShowNewSprint(true)}
+      >
+        Plan Sprint
+      </button>
+    )}
 
-          {isScrumMaster && (
-            <button
-              className={styles.newBtnAlt}
-              onClick={() => setShowNewSprint(true)}
-            >
-               Plan Sprint
-            </button>
-          )}
-
-          {currentSprint && isScrumMaster && (
-            <button
-              className={styles.newBtn}
-              onClick={() => setShowPlanning(true)}
-            >
-              ➕ Add from Backlog
-            </button>
-          )}
-        </div>
-      </header>
+    {currentSprint && isScrumMaster && (
+      <button
+        className={styles.primaryBtn}
+        onClick={() => setShowPlanning(true)}
+      >
+        + Add from Backlog
+      </button>
+    )}
+  </div>
+</div>     </header>
 
       {showPlanning && currentSprint && (
         <SprintPlanningModal

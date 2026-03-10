@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
 import {
-  FaTasks, FaBug, FaCheckCircle, FaChartLine
+  FaTasks,
+  FaBug,
+  FaCheckCircle,
+  FaChartLine
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styles from "./PmDashboard.module.css";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/apiClient";
 import SprintBurndownChart from "../components/SprintBurndownChart";
+import ProjectPicker from "../components/ProjectPicker";
 
 export default function PmDashboard() {
 
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [projectId, setProjectId] = useState(
+    localStorage.getItem("currentProjectId") || ""
+  );
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,9 +29,13 @@ export default function PmDashboard() {
     let alive = true;
 
     async function fetchDashboard() {
+      if (!projectId) return;
+
       try {
 
-        const res = await api.get("/dashboard/pm");
+        const res = await api.get("/dashboard/pm", {
+          params: { projectId }
+        });
 
         if (!alive) return;
 
@@ -44,7 +56,7 @@ export default function PmDashboard() {
       clearInterval(interval);
     };
 
-  }, []);
+  }, [projectId]);
 
   return (
     <div className={styles.page}>
@@ -53,7 +65,7 @@ export default function PmDashboard() {
 
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>Project Manager Dashboard</h1>
+          <h1 className={styles.title}>Product Owner Dashboard</h1>
           <p className={styles.subtitle}>
             Your projects, sprints, meetings and risks at a glance.
           </p>
@@ -61,7 +73,7 @@ export default function PmDashboard() {
 
         <div className={styles.user}>
           <div className={styles.avatar}>
-            {(user?.username || "PM").slice(0,1).toUpperCase()}
+            {(user?.username || "PM").slice(0, 1).toUpperCase()}
           </div>
 
           <div className={styles.userMeta}>
@@ -76,6 +88,15 @@ export default function PmDashboard() {
         </div>
       </header>
 
+      {/* PROJECT PICKER */}
+
+      <ProjectPicker
+        value={projectId}
+        onChange={(id) => {
+          localStorage.setItem("currentProjectId", id);
+          setProjectId(id);
+        }}
+      />
 
       {/* KPI CARDS */}
 
@@ -115,11 +136,9 @@ export default function PmDashboard() {
 
       </section>
 
-
       {/* GRID PANELS */}
 
       <section className={styles.grid}>
-
 
         {/* ACTIVE SPRINT */}
 
@@ -134,7 +153,11 @@ export default function PmDashboard() {
               </div>
 
               <div className={styles.muted}>
-                {new Date(data.activeSprint.startDate).toLocaleDateString()} — {" "}
+                Status: {data.activeSprint.status}
+              </div>
+
+              <div className={styles.muted}>
+                {new Date(data.activeSprint.startDate).toLocaleDateString()} —{" "}
                 {new Date(data.activeSprint.endDate).toLocaleDateString()}
               </div>
 
@@ -148,12 +171,10 @@ export default function PmDashboard() {
             </div>
           ) : (
             <div className={styles.muted}>
-              No active sprint
+              No sprint available
             </div>
           )}
         </Panel>
-
-
 
         {/* MEETINGS */}
 
@@ -191,8 +212,6 @@ export default function PmDashboard() {
 
         </Panel>
 
-
-
         {/* RISKS */}
 
         <Panel title="Project Risks" className={styles.col}>
@@ -229,9 +248,7 @@ export default function PmDashboard() {
 
         </Panel>
 
-
-
-        {/* BURNDOWN CHART */}
+        {/* BURNDOWN */}
 
         <Panel title="Sprint Burn-down" className={styles.col}>
 
@@ -249,8 +266,6 @@ export default function PmDashboard() {
   );
 }
 
-
-
 /* ---------- SMALL UI COMPONENTS ---------- */
 
 function StatCard({ icon, label, value, sub, onClick }) {
@@ -260,35 +275,20 @@ function StatCard({ icon, label, value, sub, onClick }) {
       onClick={onClick}
       style={{ cursor: "pointer" }}
     >
-
-      <div className={styles.statIcon}>
-        {icon}
-      </div>
+      <div className={styles.statIcon}>{icon}</div>
 
       <div className={styles.statInfo}>
-
-        <div className={styles.statLabel}>
-          {label}
-        </div>
-
-        <div className={styles.statValue}>
-          {value}
-        </div>
-
-        <div className={styles.statSub}>
-          {sub}
-        </div>
-
+        <div className={styles.statLabel}>{label}</div>
+        <div className={styles.statValue}>{value}</div>
+        <div className={styles.statSub}>{sub}</div>
       </div>
     </div>
   );
 }
 
-
 function Panel({ title, children, className }) {
   return (
     <section className={`${styles.panel} ${className || ""}`}>
-
       <div className={styles.panelHeader}>
         <h3>{title}</h3>
       </div>
@@ -296,7 +296,6 @@ function Panel({ title, children, className }) {
       <div className={styles.panelBody}>
         {children}
       </div>
-
     </section>
   );
 }

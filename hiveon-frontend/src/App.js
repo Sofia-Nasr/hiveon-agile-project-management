@@ -38,24 +38,15 @@ function WorkspaceRequired({ children }) {
   return children;
 }
 function PublicOnly({ children }) {
-  const {
-    token,
-    workspaceId,
-    forceWorkspaceSetup,
-    initializing,
-  } = useAuth();
+  const { token, initializing } = useAuth();
 
   if (initializing) return null;
+
+  // allow access to login/signup if not logged in
   if (!token) return children;
 
-  //  signup must ALWAYS go to workspace setup
-  if (forceWorkspaceSetup) {
-    return <Navigate to="/workspace-setup" replace />;
-  }
-
-  return workspaceId
-    ? <Navigate to="/projects" replace />
-    : <Navigate to="/workspace-setup" replace />;
+  // if logged in, go to workspace setup
+  return <Navigate to="/workspace-setup" replace />;
 }
 
 export default function App() {

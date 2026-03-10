@@ -15,57 +15,60 @@ export default function SignupPage() {
   const [msg, setMsg] = useState("");
 
   const navigate = useNavigate();
-  const { login, setForceWorkspaceSetup } = useAuth();
+  const { login } = useAuth();
 
   async function handleSignup(e) {
     e.preventDefault();
     setMsg("");
 
     try {
-      // ✅ NO ROLE SENT ANYMORE
       const res = await api.post("/auth/register", {
         username,
         email,
         password,
       });
 
-      // Apply auth payload
-      login(res.data);
+      const { token, requiresWorkspace, activeWorkspaceId } = res.data;
 
-      // 🔒 Always force workspace setup after signup
-      setForceWorkspaceSetup(true);
+      login(token);
 
-      navigate("/workspace-setup", { replace: true });
+      // Same logic as login page
+      if (requiresWorkspace) {
+        navigate("/workspace-setup", { replace: true });
+      } else if (activeWorkspaceId) {
+        navigate("/projects", { replace: true });
+      } else {
+        navigate("/workspace-setup", { replace: true });
+      }
+
     } catch (err) {
       setMsg(
         "❌ " +
-          (err.response?.data ||
-            err.response?.data?.message ||
+          (err.response?.data?.message ||
+            err.response?.data ||
             "Signup failed")
       );
     }
   }
 
-function handleGoogleSignup() {
-  // MUST be absolute URL — same reason as login
-  window.location.href = "https://localhost:7028/api/auth/google";
-}
-
-
+  function handleGoogleSignup() {
+    window.location.href = "https://localhost:7028/api/auth/google";
+  }
 
   return (
     <div className={styles.container}>
       <form onSubmit={handleSignup} className={styles.form}>
-        <h2 className={styles.title}>🐝 Create Your Hiveon Account</h2>
+        <div className={styles.titleRow}>
+          <span className={styles.hexIcon}></span>
+          <h2 className={styles.title}>Create Your Account</h2>
+        </div>
 
-
-<p className={styles.footerText}>
-  Already have an account?{" "}
-  <Link to="/login" className={styles.link}>
-    Login now!
-  </Link>
-</p>
-
+        <p className={styles.footerText}>
+          Already have an account?{" "}
+          <Link to="/login" className={styles.link}>
+            Login now!
+          </Link>
+        </p>
 
         <input
           className={styles.input}
@@ -101,7 +104,6 @@ function handleGoogleSignup() {
           </span>
         </div>
 
-        {/* ✅ Google Sign Up (ADDED, nothing else touched) */}
         <button
           type="button"
           className={styles.googleButton}
@@ -114,6 +116,7 @@ function handleGoogleSignup() {
           />
           Sign up with Google
         </button>
+
         <button className={styles.button} type="submit">
           Sign Up
         </button>

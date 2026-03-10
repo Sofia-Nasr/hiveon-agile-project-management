@@ -3,24 +3,27 @@ import { Link, useLocation } from "react-router-dom";
 import {
   FaChevronLeft,
   FaChevronRight,
-  FaProjectDiagram,
+  FaChartLine,
   FaTasks,
   FaLifeRing,
   FaCommentDots,
   FaSignOutAlt,
   FaPlusCircle,
-  FaListOl,
   FaUsers,
   FaFolderOpen,
   FaColumns,
   FaUserPlus,
+  FaLayerGroup,
+  FaVideo,
+  FaExclamationTriangle,
+  FaClipboardList,
+  FaRunning
 } from "react-icons/fa";
+import { FaBuilding } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import styles from "./Sidebar.module.css";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import InviteUsersModal from "../components/InviteUsersModal";
-import { FaExclamationTriangle } from "react-icons/fa";
-import { FaVideo } from "react-icons/fa";
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
@@ -28,7 +31,6 @@ export default function Sidebar() {
   const [showInvite, setShowInvite] = useState(false);
   const location = useLocation();
 
-  // keep a global CSS var in sync with sidebar width
   useEffect(() => {
     const width = collapsed ? "80px" : "240px";
     document.documentElement.style.setProperty("--sidebar-width", width);
@@ -51,15 +53,24 @@ export default function Sidebar() {
       <aside
         className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}
       >
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
         <div className={styles.header}>
           <div className={styles.brand}>
             <div className={styles.logo}>
-              <span className={styles.logoSymbol}>🐝</span>
+             <svg
+  className={styles.logoSymbol}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+>
+  <polygon points="12 2 20 7 20 17 12 22 4 17 4 7" />
+</svg>
               {!collapsed && (
                 <span className={styles.logoText}>Hiveon</span>
               )}
             </div>
+
             <button className={styles.collapseBtn} onClick={toggle}>
               {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
             </button>
@@ -67,7 +78,6 @@ export default function Sidebar() {
 
           <WorkspaceSwitcher collapsed={collapsed} />
 
-          {/* INVITE USERS – WORKSPACE LEVEL */}
           {isPO && (
             <button
               className={styles.inviteBtn}
@@ -82,7 +92,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* ================= SCROLLABLE NAV ================= */}
+        {/* NAV */}
         <nav className={styles.nav}>
           <button
             className={styles.createTicketBtn}
@@ -99,7 +109,7 @@ export default function Sidebar() {
             <NavLink
               to="/pm"
               label="Dashboard"
-              icon={<FaProjectDiagram />}
+              icon={<FaChartLine />}
               active={isActive("/pm")}
               collapsed={collapsed}
             />
@@ -113,10 +123,18 @@ export default function Sidebar() {
             collapsed={collapsed}
           />
 
+            <NavLink
+            to="/team"
+            label="Teams"
+            icon={<FaUsers />}
+            active={isActive("/team")}
+            collapsed={collapsed}
+          />
+
           <NavLink
             to="/epics"
             label="Epics"
-            icon={<FaProjectDiagram />}
+            icon={<FaLayerGroup />}
             active={isActive("/epics")}
             collapsed={collapsed}
           />
@@ -124,7 +142,7 @@ export default function Sidebar() {
           <NavLink
             to="/backlog"
             label="Backlog"
-            icon={<FaListOl />}
+            icon={<FaClipboardList />}
             active={isActive("/backlog")}
             collapsed={collapsed}
           />
@@ -132,16 +150,8 @@ export default function Sidebar() {
           <NavLink
             to="/sprints"
             label="Sprints"
-            icon={<FaTasks />}
+            icon={<FaRunning />}
             active={isActive("/sprints")}
-            collapsed={collapsed}
-          />
-
-          <NavLink
-            to="/team"
-            label="Teams"
-            icon={<FaUsers />}
-            active={isActive("/team")}
             collapsed={collapsed}
           />
 
@@ -152,39 +162,26 @@ export default function Sidebar() {
             active={isActive("/boards")}
             collapsed={collapsed}
           />
-          <NavLink
-  to="/meetings"
-  label="Meetings"
-  icon={<FaVideo />}
-  active={isActive("/meetings")}
-  collapsed={collapsed}
-/>
-<NavLink
-  to="/risks"
-  label="Risk Analysis"
-  icon={<FaExclamationTriangle />}
-  active={isActive("/risks")}
-  collapsed={collapsed}
-/>
 
           <NavLink
-            to="/support"
-            label="Support"
-            icon={<FaLifeRing />}
-            active={isActive("/support")}
+            to="/meetings"
+            label="Meetings"
+            icon={<FaVideo />}
+            active={isActive("/meetings")}
             collapsed={collapsed}
           />
 
           <NavLink
-            to="/feedback"
-            label="Feedback"
-            icon={<FaCommentDots />}
-            active={isActive("/feedback")}
+            to="/risks"
+            label="Risk Analysis"
+            icon={<FaExclamationTriangle />}
+            active={isActive("/risks")}
             collapsed={collapsed}
           />
+
         </nav>
 
-        {/* ================= FOOTER ================= */}
+        {/* FOOTER */}
         <div className={styles.footer}>
           <button onClick={logout} className={styles.signout}>
             <FaSignOutAlt />
@@ -193,7 +190,6 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* INVITE MODAL */}
       {showInvite && (
         <InviteUsersModal onClose={() => setShowInvite(false)} />
       )}
