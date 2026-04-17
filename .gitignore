@@ -14,6 +14,7 @@ hiveon-frontend/.env
 # .NET backend
 HiveonBackend/bin/
 HiveonBackend/obj/
+HiveonBackend/appsettings.json              
 HiveonBackend/appsettings.Development.json
 
 # General
