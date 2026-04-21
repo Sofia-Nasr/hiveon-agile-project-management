@@ -17,6 +17,13 @@ HiveonBackend/obj/
 HiveonBackend/appsettings.json              
 HiveonBackend/appsettings.Development.json
 
+
 # General
 *.log
 .DS_Store
+.env.*
+.idea/
+.vscode/
+*.pfx
+*.key
+*.pem

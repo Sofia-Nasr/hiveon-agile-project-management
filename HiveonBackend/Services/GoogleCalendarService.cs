@@ -2,6 +2,10 @@
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Auth.OAuth2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HiveonBackend.Services
 {
@@ -16,7 +20,10 @@ namespace HiveonBackend.Services
             List<string> attendeeEmails
         )
         {
-            var credential = GoogleCredential.FromAccessToken(accessToken);
+            // ✅ ONLY ONE credential (correct approach)
+            var credential = GoogleCredential
+                .FromAccessToken(accessToken)
+                .CreateScoped(CalendarService.Scope.CalendarEvents);
 
             var service = new CalendarService(new BaseClientService.Initializer()
             {
@@ -24,6 +31,7 @@ namespace HiveonBackend.Services
                 ApplicationName = "Hiveon"
             });
 
+            // 📅 EVENT
             var calendarEvent = new Event
             {
                 Summary = title,
@@ -41,32 +49,43 @@ namespace HiveonBackend.Services
                     TimeZone = "UTC"
                 },
 
-                Attendees = attendeeEmails
+                Attendees = attendeeEmails?
                     .Select(e => new EventAttendee { Email = e })
                     .ToList(),
 
+                // 🔥 REQUIRED for Meet generation
                 ConferenceData = new ConferenceData
                 {
                     CreateRequest = new CreateConferenceRequest
                     {
-                        RequestId = Guid.NewGuid().ToString(),
-                        ConferenceSolutionKey = new ConferenceSolutionKey
-                        {
-                            Type = "hangoutsMeet"
-                        }
+                        RequestId = Guid.NewGuid().ToString()
                     }
                 }
             };
 
             var request = service.Events.Insert(calendarEvent, "primary");
-            request.ConferenceDataVersion = 1;
 
-            // 🔹 this sends email invites automatically
+            request.ConferenceDataVersion = 1;
             request.SendUpdates = EventsResource.InsertRequest.SendUpdatesEnum.All;
 
             var createdEvent = await request.ExecuteAsync();
 
-            return createdEvent.HangoutLink;
+            // 🔄 REFRESH (Google sometimes delays Meet generation)
+            var fullEvent = await service.Events
+                .Get("primary", createdEvent.Id)
+                .ExecuteAsync();
+
+            var meetLink = fullEvent.ConferenceData?
+                .EntryPoints?
+                .FirstOrDefault(e => e.EntryPointType == "video")?
+                .Uri;
+
+            if (string.IsNullOrEmpty(meetLink))
+            {
+                throw new Exception("Google Meet link was not generated. Check OAuth scope or Google account permissions.");
+            }
+
+            return meetLink;
         }
     }
 }

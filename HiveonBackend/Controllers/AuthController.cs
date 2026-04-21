@@ -90,12 +90,12 @@ namespace HiveonBackend.Controllers
             var scope = "openid email profile https://www.googleapis.com/auth/calendar.events";
 
             var url = "https://accounts.google.com/o/oauth2/v2/auth" +
-                      "?response_type=code" +
-                      "&client_id=" + Uri.EscapeDataString(clientId) +
-                      "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
-                      "&scope=" + Uri.EscapeDataString(scope) +
-                      "&access_type=offline" +
-                      "&prompt=select_account";
+    "?response_type=code" +
+    "&client_id=" + Uri.EscapeDataString(clientId) +
+    "&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
+    "&scope=" + Uri.EscapeDataString(scope) +
+    "&access_type=offline" +
+    "&prompt=consent";
 
             return Redirect(url);
         }
@@ -173,9 +173,27 @@ namespace HiveonBackend.Controllers
                 await _context.SaveChangesAsync();
             }
             // Save Google tokens for calendar / meet creation
-            user.GoogleAccessToken = googleTokens.access_token;
-            user.GoogleRefreshToken = googleTokens.refresh_token;
-            user.GoogleTokenExpiry = DateTime.UtcNow.AddSeconds(googleTokens.expires_in);
+            var connection = await _context.GoogleConnections
+      .FirstOrDefaultAsync(g => g.UserId == user.Id);
+
+            if (connection == null)
+            {
+                connection = new GoogleConnection
+                {
+                    UserId = user.Id,
+                    AccessToken = googleTokens.access_token,
+                    RefreshToken = googleTokens.refresh_token,
+                    ExpiresAt = DateTime.UtcNow.AddSeconds(googleTokens.expires_in)
+                };
+
+                _context.GoogleConnections.Add(connection);
+            }
+            else
+            {
+                connection.AccessToken = googleTokens.access_token;
+                connection.RefreshToken = googleTokens.refresh_token;
+                connection.ExpiresAt = DateTime.UtcNow.AddSeconds(googleTokens.expires_in);
+            }
 
             await _context.SaveChangesAsync();
 

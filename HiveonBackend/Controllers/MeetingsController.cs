@@ -169,8 +169,13 @@ namespace HiveonBackend.Controllers
                 if (user == null)
                     return Unauthorized("User not found.");
 
-                if (string.IsNullOrEmpty(user.GoogleAccessToken))
+                var googleConnection = await _context.GoogleConnections
+       .FirstOrDefaultAsync(g => g.UserId == userId);
+
+                if (googleConnection == null || string.IsNullOrEmpty(googleConnection.AccessToken))
+                {
                     return BadRequest("Google account not connected.");
+                }
 
                 /* ---------------------------------------- */
                 /* PROJECT                                  */
@@ -208,17 +213,17 @@ namespace HiveonBackend.Controllers
                 try
                 {
                     meetLink = await _googleCalendar.CreateMeetLink(
-                        user.GoogleAccessToken,
-                        dto.Title,
-                        dto.Description,
-                        dto.StartTime,
-                        dto.EndTime,
-                        participantEmails
-                    );
+    googleConnection.AccessToken,
+    dto.Title,
+    dto.Description,
+    dto.StartTime,
+    dto.EndTime,
+    participantEmails
+);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return BadRequest("Your Google session expired. Please reconnect your Google account.");
+                    return BadRequest(ex.ToString());
                 }
                 /* ---------------------------------------- */
                 /* SAVE MEETING                             */
@@ -262,7 +267,7 @@ namespace HiveonBackend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.ToString());
             }
         }
 
