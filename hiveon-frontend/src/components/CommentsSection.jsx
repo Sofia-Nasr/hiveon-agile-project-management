@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function CommentsSection({
   entityId,
-  entityType,
+  entityType, 
   assigneeName,
   assigneeEmail
 }) {
