@@ -22,13 +22,12 @@ builder.Services.AddCors(o => o.AddPolicy("AllowFrontend", p =>
 ));
 
 //  EF Core
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
-    )
-);
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddDbContext<AppDbContext>(opt =>
+  opt.UseNpgsql(connectionString)
+);
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
