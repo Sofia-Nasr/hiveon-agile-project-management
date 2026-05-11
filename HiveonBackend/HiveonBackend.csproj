@@ -11,9 +11,7 @@
     <Compile Remove="WeatherForecast.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="Dockerfile" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
