@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://hiveon-agile-project-management.onrender.com/api";
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE || "/api",
+  baseURL: API_BASE_URL,
   withCredentials: false,
 });
 
@@ -14,7 +18,7 @@ api.interceptors.request.use((config) => {
 
 function describeError(err) {
   if (err?.response) {
-    const { status, statusText, data, config } = err.response;
+    const { status, data, config } = err.response;
     let msg = `[${status}] ${config?.method?.toUpperCase?.() || ""} ${config?.url}`;
     const detail = typeof data === "string" ? data
                  : data?.detail || data?.title || data?.message || "";

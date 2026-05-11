@@ -7,6 +7,10 @@ import styles from "./SignupPage.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://hiveon-agile-project-management.onrender.com/api";
+
 export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -52,7 +56,7 @@ export default function SignupPage() {
   }
 
   function handleGoogleSignup() {
-    window.location.href = "https://localhost:7028/api/auth/google";
+    window.location.href = `${API_BASE_URL}/auth/google`;
   }
 
   return (
