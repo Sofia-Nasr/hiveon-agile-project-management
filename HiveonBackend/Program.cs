@@ -22,27 +22,12 @@ builder.Services.AddCors(o => o.AddPolicy("AllowFrontend", p =>
 ));
 
 //  EF Core
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+var connectionString =
+ builder.Configuration.GetConnectionString("DefaultConnection")
+ ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
-string connectionString;
-
-if (!string.IsNullOrEmpty(databaseUrl))
-{
-    var databaseUri = new Uri(databaseUrl);
-    var userInfo = databaseUri.UserInfo.Split(':');
-
-    connectionString =
-        $"Host={databaseUri.Host};" +
-        $"Port={databaseUri.Port};" +
-        $"Database={databaseUri.AbsolutePath.Trim('/')};" +
-        $"Username={userInfo[0]};" +
-        $"Password={userInfo[1]};" +
-        $"SSL Mode=Require;Trust Server Certificate=true";
-}
-else
-{
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-}
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
 builder.Services.AddDbContext<AppDbContext>(opt =>
   opt.UseNpgsql(connectionString)
 );
@@ -120,6 +105,8 @@ builder.Services.AddHealthChecks();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<GoogleCalendarService>();
 var app = builder.Build();
+
+app.UseDeveloperExceptionPage();
 
 app.UseSwagger();
 app.UseSwaggerUI();
