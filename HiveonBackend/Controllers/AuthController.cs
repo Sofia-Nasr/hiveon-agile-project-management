@@ -110,6 +110,9 @@ namespace HiveonBackend.Controllers
     [FromQuery] string? code,
     [FromQuery] string? error = null)
         {
+            // Debug logging
+            Console.WriteLine($"Google callback received - Code: {code?.Substring(0, Math.Min(10, code?.Length ?? 0))}..., Error: {error}");
+
             if (!string.IsNullOrEmpty(error))
                 return BadRequest("Google login error: " + error);
 
