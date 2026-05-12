@@ -26,11 +26,11 @@ var connectionString =
  builder.Configuration.GetConnectionString("DefaultConnection")
  ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found. Set it in appsettings.json or DATABASE_URL environment variable.");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<AppDbContext>(opt =>
-  opt.UseNpgsql(connectionString)
-);
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
