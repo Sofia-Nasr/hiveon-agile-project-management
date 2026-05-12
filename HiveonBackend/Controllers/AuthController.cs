@@ -107,8 +107,8 @@ namespace HiveonBackend.Controllers
         [HttpGet("google/callback")]
         [AllowAnonymous]
         public async Task<IActionResult> GoogleCallback(
-    [FromQuery] string code,
-    [FromQuery] string error = null)
+    [FromQuery] string? code,
+    [FromQuery] string? error = null)
         {
             if (!string.IsNullOrEmpty(error))
                 return BadRequest("Google login error: " + error);
