@@ -16,9 +16,9 @@ function decodeJwt(token) {
   }
 }
 
-function getClaim(decoded, shortKey, dotNetUriKey) {
+function getClaim(decoded, shortKey, dotNetKey) {
   if (!decoded) return null;
-  return decoded[shortKey] ?? decoded[dotNetUriKey] ?? null;
+  return decoded?.[shortKey] ?? decoded?.[dotNetKey] ?? null;
 }
 
 export function AuthProvider({ children }) {
@@ -27,41 +27,51 @@ export function AuthProvider({ children }) {
   const [workspaceId, setWorkspaceId] = useState(null);
   const [initializing, setInitializing] = useState(true);
 
-  // 🔧 ONLY CHANGE: allowWorkspace flag
-  function applyToken(jwt, { allowWorkspace = false } = {}) {
+  // ===============================
+  // CORE TOKEN APPLY FUNCTION
+  // ===============================
+  function applyToken(jwt, { workspaceFromOAuth = null } = {}) {
     const decoded = decodeJwt(jwt);
     if (!decoded?.exp) return false;
 
     const now = Math.floor(Date.now() / 1000);
     if (decoded.exp < now) return false;
 
-    const role = getClaim(
-      decoded,
-      "role",
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-    );
+    const role =
+      getClaim(
+        decoded,
+        "role",
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      ) || "Developer";
 
-    const username = getClaim(
-      decoded,
-      "name",
-      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-    );
+    const username =
+      getClaim(
+        decoded,
+        "name",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+      ) || "";
 
-    const email = getClaim(
-      decoded,
-      "email",
-      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-    );
+    const email =
+      getClaim(
+        decoded,
+        "email",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+      ) || "";
 
-    const userId = getClaim(
-      decoded,
-      "nameid",
-      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    );
+    const userId =
+      getClaim(
+        decoded,
+        "nameid",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ) || "";
 
-    const ws = allowWorkspace
-      ? decoded.workspaceId ?? decoded["workspaceId"] ?? null
-      : null;
+    // ✅ FIX: priority workspace source
+    const ws =
+      workspaceFromOAuth ||
+      decoded.workspaceId ||
+      decoded["workspaceId"] ||
+      localStorage.getItem("workspaceId") ||
+      null;
 
     setToken(jwt);
     setWorkspaceId(ws);
@@ -80,44 +90,55 @@ export function AuthProvider({ children }) {
     return true;
   }
 
-useEffect(() => {
-const saved = localStorage.getItem("token");
+  // ===============================
+  // INIT FROM LOCALSTORAGE
+  // ===============================
+  useEffect(() => {
+    const saved = localStorage.getItem("token");
 
-if (saved) {
-  const valid = applyToken(saved, { allowWorkspace: false });
+    if (saved) {
+      const valid = applyToken(saved);
+      if (!valid) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("workspaceId");
+      }
+    }
 
-  if (!valid) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("workspaceId");
-  }
-}
-  setInitializing(false);
-}, []);
- const login = (input) => {
-  const jwt = typeof input === "string" ? input : input?.token;
-  if (!jwt || typeof jwt !== "string") return;
+    setInitializing(false);
+  }, []);
 
-  localStorage.setItem("token", jwt);
-if (!applyToken(jwt, { allowWorkspace: false })) logout();
-};
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
+  // ===============================
+  // LOGIN (supports OAuth + normal login)
+  // ===============================
+  const login = (input) => {
+    const jwt = typeof input === "string" ? input : input?.token;
+    if (!jwt) return;
 
-  const tokenFromGoogle = params.get("token");
-  if (tokenFromGoogle) {
-    login(tokenFromGoogle);
-
-    // clean URL while staying on the current route
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-}, [login]);
-
-  // WORKSPACE SWITCH / JOIN
-  const selectWorkspace = (jwt) => {
     localStorage.setItem("token", jwt);
-    applyToken(jwt, { allowWorkspace: true });
+
+    const workspaceFromOAuth = input?.activeWorkspaceId || null;
+
+    const ok = applyToken(jwt, {
+      workspaceFromOAuth:
+        workspaceFromOAuth && workspaceFromOAuth !== "null"
+          ? workspaceFromOAuth
+          : null,
+    });
+
+    if (!ok) logout();
   };
 
+  // ===============================
+  // WORKSPACE SWITCH
+  // ===============================
+  const selectWorkspace = (jwt) => {
+    localStorage.setItem("token", jwt);
+    applyToken(jwt);
+  };
+
+  // ===============================
+  // LOGOUT
+  // ===============================
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("workspaceId");

@@ -37,11 +37,16 @@ export default function OAuthSuccessPage() {
     login({
       token,
       requiresWorkspace: requiresWorkspace === "true",
-      activeWorkspaceId: activeWorkspaceId || null,
+      activeWorkspaceId:
+  activeWorkspaceId && activeWorkspaceId !== "null"
+    ? activeWorkspaceId
+    : null,
     });
 
     const decoded = safeDecodeJwt(token);
-    const role = decoded?.role || "Developer";
+    const role =
+  decoded?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
+  "Developer";
 
     // Keep existing behavior: pending users must complete profile first
     if (role === "Pending") {
