@@ -220,6 +220,7 @@ namespace HiveonBackend.Controllers
                 $"&requiresWorkspace={(requiresWorkspace ? "true" : "false")}" +
                 $"&activeWorkspaceId={Uri.EscapeDataString(activeWorkspaceId)}";
 
+            Console.WriteLine($"Redirecting Google OAuth result to: {url}");
             return Redirect(url);
         }
 
@@ -368,7 +369,7 @@ namespace HiveonBackend.Controllers
         {
             var frontendUrl = _config["Frontend:OAuthRedirectUrl"]?.TrimEnd('/');
             if (string.IsNullOrWhiteSpace(frontendUrl))
-                return "/";
+                return "/oauth-success";
             if (frontendUrl.EndsWith("/oauth-success", StringComparison.OrdinalIgnoreCase))
                 return frontendUrl;
             return frontendUrl + "/oauth-success";
