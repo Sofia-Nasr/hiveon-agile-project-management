@@ -86,7 +86,7 @@ namespace HiveonBackend.Controllers
         public IActionResult GoogleLogin()
         {
             var clientId = _config["Google:ClientId"];
-            var redirectUri = _config["Google:LoginRedirectUri"];
+            var redirectUri = GetGoogleLoginRedirectUri();
             var scope = "openid email profile https://www.googleapis.com/auth/calendar.events";
 
             var url = "https://accounts.google.com/o/oauth2/v2/auth" +
@@ -97,6 +97,7 @@ namespace HiveonBackend.Controllers
     "&access_type=offline" +
     "&prompt=consent";
 
+            Console.WriteLine($"Google login starting: redirectUri={redirectUri}");
             return Redirect(url);
         }
 
@@ -121,7 +122,10 @@ namespace HiveonBackend.Controllers
 
             var clientId = _config["Google:ClientId"];
             var clientSecret = _config["Google:ClientSecret"];
-            var redirectUri = _config["Google:LoginRedirectUri"];
+            var redirectUri = GetGoogleLoginRedirectUri();
+
+            var requestUrl = $"{Request?.Scheme}://{Request?.Host}{Request?.Path}{Request?.QueryString}";
+            Console.WriteLine($"Google callback request: {requestUrl}, redirectUri={redirectUri}");
 
             using var http = new HttpClient();
 
@@ -205,7 +209,7 @@ namespace HiveonBackend.Controllers
 
             var authPayload = BuildAuthResponse(user, roleName);
 
-            var frontendRedirect = _config["Frontend:OAuthRedirectUrl"];
+            var frontendRedirect = GetFrontendOAuthRedirectUrl();
 
             var token = (string)authPayload["token"];
             var requiresWorkspace = (bool)authPayload["requiresWorkspace"];
@@ -335,6 +339,39 @@ namespace HiveonBackend.Controllers
                     role = roleName
                 }
             };
+        }
+
+        private string GetGoogleLoginRedirectUri()
+        {
+            var configuredUri = _config["Google:LoginRedirectUri"]?.Trim();
+            var requestHost = Request?.Host.Host ?? string.Empty;
+            var isRequestLocal = requestHost.Contains("localhost", StringComparison.OrdinalIgnoreCase);
+
+            if (!string.IsNullOrWhiteSpace(configuredUri) &&
+                Uri.TryCreate(configuredUri, UriKind.Absolute, out var parsedUri))
+            {
+                var configuredIsLocal = parsedUri.Host.Contains("localhost", StringComparison.OrdinalIgnoreCase);
+                if (!configuredIsLocal || isRequestLocal)
+                {
+                    return configuredUri;
+                }
+            }
+
+            var scheme = Request?.Headers["X-Forwarded-Proto"].FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(scheme))
+                scheme = Request?.Scheme ?? "https";
+
+            return $"{scheme}://{Request?.Host}/api/auth/google/callback";
+        }
+
+        private string GetFrontendOAuthRedirectUrl()
+        {
+            var frontendUrl = _config["Frontend:OAuthRedirectUrl"]?.TrimEnd('/');
+            if (string.IsNullOrWhiteSpace(frontendUrl))
+                return "/";
+            if (frontendUrl.EndsWith("/oauth-success", StringComparison.OrdinalIgnoreCase))
+                return frontendUrl;
+            return frontendUrl + "/oauth-success";
         }
 
    

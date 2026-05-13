@@ -104,18 +104,13 @@ useEffect(() => {
   const params = new URLSearchParams(window.location.search);
 
   const tokenFromGoogle = params.get("token");
-  const requiresWorkspace = params.get("requiresWorkspace");
-  const activeWorkspaceId = params.get("activeWorkspaceId");
-if (tokenFromGoogle) {
-  login(tokenFromGoogle);
+  if (tokenFromGoogle) {
+    login(tokenFromGoogle);
 
-  // clean URL
-  window.history.replaceState({}, document.title, "/");
-
-  // ALWAYS go to workspace selection
-  window.location.href = "/workspace-setup";
-}
-}, []);
+    // clean URL while staying on the current route
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}, [login]);
 
   // WORKSPACE SWITCH / JOIN
   const selectWorkspace = (jwt) => {
