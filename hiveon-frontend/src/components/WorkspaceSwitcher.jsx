@@ -9,7 +9,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { FaSitemap } from "react-icons/fa";
   export default function WorkspaceSwitcher({ collapsed }) {
-  const { workspaceId, login } = useAuth();
+  const { workspaceId, selectWorkspace } = useAuth();
 
   const [open, setOpen] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
@@ -51,7 +51,7 @@ import { FaSitemap } from "react-icons/fa";
     const res = await switchWorkspace(wsId);
 
     // apply new JWT
-    login(res.token);
+   selectWorkspace(res.token);
 
     setOpen(false);
 
