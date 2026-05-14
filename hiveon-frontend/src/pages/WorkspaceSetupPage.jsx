@@ -35,23 +35,37 @@ export default function WorkspaceSetupPage() {
   }, []);
 
   async function handleCreate() {
-    if (!newName.trim()) return;
+  if (!newName.trim()) return;
 
-    try {
-      setCreating(true);
-      setError("");
+  try {
+    setCreating(true);
+    setError("");
 
-      const ws = await createWorkspace(newName.trim());
-      setWorkspaces((prev) => [...prev, ws]);
-      setNewName("");
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create workspace");
-    } finally {
-      setCreating(false);
-    }
+    // Create workspace
+    const ws = await createWorkspace(newName.trim());
+
+    // Add to UI list
+    setWorkspaces((prev) => [...prev, ws]);
+
+    // IMPORTANT:
+    // Immediately switch into the new workspace
+    const data = await switchWorkspace(ws.id);
+
+    // Store NEW JWT with workspaceId claim
+    selectWorkspace(data.token);
+
+    setNewName("");
+
+    // Go to app
+    navigate("/projects", { replace: true });
+
+  } catch (err) {
+    console.error(err);
+    setError("Failed to create workspace");
+  } finally {
+    setCreating(false);
   }
-
+}
   async function handleSelect(workspaceId) {
     try {
       const data = await switchWorkspace(workspaceId);
