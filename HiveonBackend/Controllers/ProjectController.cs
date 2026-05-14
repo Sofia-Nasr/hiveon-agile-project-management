@@ -79,16 +79,23 @@ namespace HiveonBackend.Controllers
             if (wsUser.Role != "ProductOwner")
                 return Forbid("Only Product Owners can create projects.");
 
+            var startDate = dto.StartDate == default
+                ? DateTime.UtcNow
+                : DateTime.SpecifyKind(dto.StartDate, DateTimeKind.Utc);
+
+            var endDate = dto.EndDate.HasValue
+                ? DateTime.SpecifyKind(dto.EndDate.Value, DateTimeKind.Utc)
+                : null as DateTime?;
+
             var project = new Project
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name.Trim(),
                 Description = dto.Description,
                 Client = dto.Client,
-                StartDate = dto.StartDate == default ? DateTime.UtcNow : dto.StartDate,
-                EndDate = dto.EndDate,
+                StartDate = startDate,
+                EndDate = endDate,
                 WorkspaceId = wsId
-
             };
 
             _db.Projects.Add(project);
