@@ -14,8 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 // CORS (dev)
 var allowedOrigins = new[]
 {
-    "http://localhost:3000","http://localhost:3001","http://127.0.0.1:3000","http://127.0.0.1:3001",
-    "http://localhost:5173","https://localhost:3000","https://localhost:3001","https://localhost:5173","hiveon-agile-project-management-w7d.vercel.app"
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://localhost:5173",
+    "https://localhost:3000",
+    "https://localhost:3001",
+    "https://localhost:5173",
+
+    //  Vercel frontend
+    "https://hiveon-agile-project-management-w7d.vercel.app"
 };
 builder.Services.AddCors(o => o.AddPolicy("AllowFrontend", p =>
     p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()
@@ -112,7 +121,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
