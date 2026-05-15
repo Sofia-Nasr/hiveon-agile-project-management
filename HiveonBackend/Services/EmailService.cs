@@ -24,14 +24,23 @@ public class EmailService : IEmailService
         string role
     )
     {
+        if (string.IsNullOrWhiteSpace(toEmail))
+            throw new ArgumentException("Recipient email is required.", nameof(toEmail));
+
+        if (string.IsNullOrWhiteSpace(workspaceName))
+            throw new ArgumentException("Workspace name is required.", nameof(workspaceName));
+
         var smtp = BuildSmtpClient();
+
+        var fromEmail = _config["Email:FromEmail"];
+        var fromName = _config["Email:FromName"] ?? "Hiveon";
+
+        if (string.IsNullOrWhiteSpace(fromEmail))
+            throw new InvalidOperationException("Missing email configuration: Email:FromEmail");
 
         var message = new MailMessage
         {
-            From = new MailAddress(
-                _config["Email:FromEmail"],
-                _config["Email:FromName"]
-            ),
+            From = new MailAddress(fromEmail, fromName),
             Subject = $"You're invited to join {workspaceName} on Hiveon",
             Body = $@"
 You’ve been invited to join the workspace ""{workspaceName}"" on Hiveon.
@@ -60,17 +69,23 @@ Join code:
         string entityId
     )
     {
+        if (string.IsNullOrWhiteSpace(toEmail))
+            throw new ArgumentException("Recipient email is required.", nameof(toEmail));
+
         var smtp = BuildSmtpClient();
+
+        var fromEmail = _config["Email:FromEmail"];
+        var fromName = _config["Email:FromName"] ?? "Hiveon";
+
+        if (string.IsNullOrWhiteSpace(fromEmail))
+            throw new InvalidOperationException("Missing email configuration: Email:FromEmail");
 
         var frontendUrl = _config["Frontend:BaseUrl"]; 
         var link = $"{frontendUrl}/sprints"; 
 
         var message = new MailMessage
         {
-            From = new MailAddress(
-                _config["Email:FromEmail"],
-                _config["Email:FromName"]
-            ),
+            From = new MailAddress(fromEmail, fromName),
             Subject = "You were mentioned on Hiveon",
             Body = $@"
 You were mentioned in a comment on Hiveon.
@@ -91,14 +106,34 @@ Comment:
 
     private SmtpClient BuildSmtpClient()
     {
+        var host = _config["Email:SmtpHost"];
+        var portValue = _config["Email:SmtpPort"];
+        var username = _config["Email:Username"];
+        var password = _config["Email:Password"];
+
+        if (string.IsNullOrWhiteSpace(host))
+            throw new InvalidOperationException("Missing email configuration: Email:SmtpHost");
+
+        if (string.IsNullOrWhiteSpace(portValue))
+            throw new InvalidOperationException("Missing email configuration: Email:SmtpPort");
+
+        if (!int.TryParse(portValue, out var port))
+            throw new InvalidOperationException("Invalid email configuration: Email:SmtpPort must be a number.");
+
+        if (string.IsNullOrWhiteSpace(username))
+            throw new InvalidOperationException("Missing email configuration: Email:Username");
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new InvalidOperationException("Missing email configuration: Email:Password");
+
         return new SmtpClient
         {
-            Host = _config["Email:SmtpHost"],
-            Port = int.Parse(_config["Email:SmtpPort"]),
+            Host = host,
+            Port = port,
             EnableSsl = true,
             Credentials = new NetworkCredential(
-                _config["Email:Username"],
-                _config["Email:Password"]
+                username,
+                password
             )
         };
     }
