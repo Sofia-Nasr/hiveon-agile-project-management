@@ -1,19 +1,40 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+
 public interface IEmailService
 {
-    Task SendInviteEmail(string toEmail, string workspaceName, string inviteUrl, string joinCode, string role);
-    Task SendMentionEmail(string toEmail, string commentContent, string entityType, string entityId);
+    Task SendInviteEmail(
+        string toEmail,
+        string workspaceName,
+        string inviteUrl,
+        string joinCode,
+        string role
+    );
+
+    Task SendMentionEmail(
+        string toEmail,
+        string commentContent,
+        string entityType,
+        string entityId
+    );
 }
 
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public EmailService(IConfiguration config)
+    public EmailService(
+        IConfiguration config,
+        IHttpClientFactory httpClientFactory
+    )
     {
         _config = config;
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task SendInviteEmail(
@@ -24,25 +45,20 @@ public class EmailService : IEmailService
         string role
     )
     {
-        if (string.IsNullOrWhiteSpace(toEmail))
-            throw new ArgumentException("Recipient email is required.", nameof(toEmail));
-
-        if (string.IsNullOrWhiteSpace(workspaceName))
-            throw new ArgumentException("Workspace name is required.", nameof(workspaceName));
-
-        var smtp = BuildSmtpClient();
-
+        var apiKey = _config["Email:ApiKey"];
         var fromEmail = _config["Email:FromEmail"];
-        var fromName = _config["Email:FromName"] ?? "Hiveon";
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+            throw new InvalidOperationException(
+                "Missing email configuration: Email:ApiKey"
+            );
 
         if (string.IsNullOrWhiteSpace(fromEmail))
-            throw new InvalidOperationException("Missing email configuration: Email:FromEmail");
+            throw new InvalidOperationException(
+                "Missing email configuration: Email:FromEmail"
+            );
 
-        var message = new MailMessage
-        {
-            From = new MailAddress(fromEmail, fromName),
-            Subject = $"You're invited to join {workspaceName} on Hiveon",
-            Body = $@"
+        var messageText = $@"
 You’ve been invited to join the workspace ""{workspaceName}"" on Hiveon.
 
 Role assigned: {role}
@@ -50,16 +66,44 @@ Role assigned: {role}
 Join code:
 {joinCode}
 
-
+Invite link:
+{inviteUrl}
 
 — Hiveon Team
-",
-            IsBodyHtml = false
+";
+
+        var payload = new
+        {
+            from = fromEmail,
+            to = toEmail,
+            subject = $"You're invited to join {workspaceName} on Hiveon",
+            text = messageText
         };
 
-        message.To.Add(toEmail);
+        var client = _httpClientFactory.CreateClient();
 
-        await smtp.SendMailAsync(message);
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", apiKey);
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(payload),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var response = await client.PostAsync(
+            "https://api.resend.com/emails",
+            content
+        );
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            throw new InvalidOperationException(
+                $"Resend send failed: {response.StatusCode}: {body}"
+            );
+        }
     }
 
     public async Task SendMentionEmail(
@@ -69,80 +113,65 @@ Join code:
         string entityId
     )
     {
-        if (string.IsNullOrWhiteSpace(toEmail))
-            throw new ArgumentException("Recipient email is required.", nameof(toEmail));
-
-        var smtp = BuildSmtpClient();
-
+        var apiKey = _config["Email:ApiKey"];
         var fromEmail = _config["Email:FromEmail"];
-        var fromName = _config["Email:FromName"] ?? "Hiveon";
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+            throw new InvalidOperationException(
+                "Missing email configuration: Email:ApiKey"
+            );
 
         if (string.IsNullOrWhiteSpace(fromEmail))
-            throw new InvalidOperationException("Missing email configuration: Email:FromEmail");
+            throw new InvalidOperationException(
+                "Missing email configuration: Email:FromEmail"
+            );
 
-        var frontendUrl = _config["Frontend:BaseUrl"]; 
-        var link = $"{frontendUrl}/sprints"; 
+        var frontendUrl = _config["Frontend:BaseUrl"];
+        var link = $"{frontendUrl}/sprints";
 
-        var message = new MailMessage
-        {
-            From = new MailAddress(fromEmail, fromName),
-            Subject = "You were mentioned on Hiveon",
-            Body = $@"
+        var messageText = $@"
 You were mentioned in a comment on Hiveon.
 
 Comment:
 ""{commentContent}""
 
+View here:
+{link}
 
 — Hiveon
-",
-            IsBodyHtml = false
+";
+
+        var payload = new
+        {
+            from = fromEmail,
+            to = toEmail,
+            subject = "You were mentioned on Hiveon",
+            text = messageText
         };
 
-        message.To.Add(toEmail);
+        var client = _httpClientFactory.CreateClient();
 
-        await smtp.SendMailAsync(message);
-    }
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", apiKey);
 
-    private SmtpClient BuildSmtpClient()
-    {
-        var host = _config["Email:SmtpHost"];
-        var portValue = _config["Email:SmtpPort"];
-        var username = _config["Email:Username"];
-        var password = _config["Email:Password"];
+        var content = new StringContent(
+            JsonSerializer.Serialize(payload),
+            Encoding.UTF8,
+            "application/json"
+        );
 
-        if (string.IsNullOrWhiteSpace(host))
-            throw new InvalidOperationException("Missing email configuration: Email:SmtpHost");
+        var response = await client.PostAsync(
+            "https://api.resend.com/emails",
+            content
+        );
 
-        if (string.IsNullOrWhiteSpace(portValue))
-            throw new InvalidOperationException("Missing email configuration: Email:SmtpPort");
-
-        if (!int.TryParse(portValue, out var port))
-            throw new InvalidOperationException("Invalid email configuration: Email:SmtpPort must be a number.");
-
-        if (string.IsNullOrWhiteSpace(username))
-            throw new InvalidOperationException("Missing email configuration: Email:Username");
-
-        if (string.IsNullOrWhiteSpace(password))
-            throw new InvalidOperationException("Missing email configuration: Email:Password");
-
-        var smtp = new SmtpClient(host, port)
+        if (!response.IsSuccessStatusCode)
         {
-            EnableSsl = true,
-            UseDefaultCredentials = false,
-            DeliveryMethod = SmtpDeliveryMethod.Network,
-            Timeout = 10000,
-            Credentials = new NetworkCredential(
-                username,
-                password
-            )
-        };
+            var body = await response.Content.ReadAsStringAsync();
 
-        if (host.Equals("smtp.gmail.com", StringComparison.OrdinalIgnoreCase))
-        {
-            smtp.TargetName = "STARTTLS/smtp.gmail.com";
+            throw new InvalidOperationException(
+                $"Resend send failed: {response.StatusCode}: {body}"
+            );
         }
-
-        return smtp;
     }
 }

@@ -109,6 +109,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
+builder.Services.AddHttpClient();
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks();
 builder.Services.AddScoped<IEmailService, EmailService>();
