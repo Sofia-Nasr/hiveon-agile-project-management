@@ -14,6 +14,12 @@ export async function switchWorkspace(workspaceId) {
   const res = await api.post("/workspace/switch", { workspaceId });
   return res.data; // IMPORTANT
 }
+
+export async function joinWorkspace(code) {
+  const res = await api.post("/workspace/join", { code });
+  return res.data;
+}
+
 // SEND INVITE
 export async function sendWorkspaceInvite({ email, role }) {
   const res = await api.post("/workspace/invites/send", {

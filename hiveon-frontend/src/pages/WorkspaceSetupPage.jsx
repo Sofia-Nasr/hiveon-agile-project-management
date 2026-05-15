@@ -5,6 +5,7 @@ import {
   getWorkspaces,
   createWorkspace,
   switchWorkspace,
+  joinWorkspace,
 } from "../api/workspaceApi";
 import styles from "./WorkspaceSetupPage.module.css";
 
@@ -85,18 +86,7 @@ export default function WorkspaceSetupPage() {
       setJoining(true);
       setError("");
 
-      const res = await fetch("/api/workspace/join", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ code: joinCode.trim() }),
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      const data = await res.json();
+      const data = await joinWorkspace(joinCode.trim());
       selectWorkspace(data.token); // 🔧 KEY FIX
       navigate("/projects", { replace: true });
     } catch (err) {
