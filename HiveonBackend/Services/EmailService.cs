@@ -126,15 +126,23 @@ Comment:
         if (string.IsNullOrWhiteSpace(password))
             throw new InvalidOperationException("Missing email configuration: Email:Password");
 
-        return new SmtpClient
+        var smtp = new SmtpClient(host, port)
         {
-            Host = host,
-            Port = port,
             EnableSsl = true,
+            UseDefaultCredentials = false,
+            DeliveryMethod = SmtpDeliveryMethod.Network,
+            Timeout = 10000,
             Credentials = new NetworkCredential(
                 username,
                 password
             )
         };
+
+        if (host.Equals("smtp.gmail.com", StringComparison.OrdinalIgnoreCase))
+        {
+            smtp.TargetName = "STARTTLS/smtp.gmail.com";
+        }
+
+        return smtp;
     }
 }
