@@ -4,11 +4,11 @@ import { sendWorkspaceInvite } from "../api/workspaceApi";
 
 export default function InviteUsersModal({ onClose }) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("Member");
+  const [role, setRole] = useState("Developer");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   async function submit() {
     if (!email.trim()) return;
 
@@ -57,6 +57,7 @@ const [open, setOpen] = useState(false);
           <>
             <label>Email</label>
             <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@email.com"

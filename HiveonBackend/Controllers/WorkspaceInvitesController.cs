@@ -38,8 +38,20 @@ namespace HiveonBackend.Controllers
         [Authorize]
         public async Task<IActionResult> SendInvite([FromBody] WorkspaceInviteDto dto)
         {
+            if (dto == null)
+                return BadRequest("Invite payload is required.");
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var email = dto.Email?.Trim().ToLower();
+            var role = dto.Role?.Trim();
+
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest("Email is required.");
+
+            if (string.IsNullOrWhiteSpace(role))
+                return BadRequest("Role is required.");
 
             var inviterIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var workspaceIdStr = User.FindFirst("workspaceId")?.Value;
@@ -70,7 +82,7 @@ namespace HiveonBackend.Controllers
             // Prevent duplicate membership
             var alreadyMember = await _db.WorkspaceUsers.AnyAsync(wu =>
                 wu.WorkspaceId == workspaceId &&
-                wu.User.Email == dto.Email);
+                wu.User.Email == email);
 
             if (alreadyMember)
                 return BadRequest("User already belongs to this workspace.");
@@ -82,7 +94,7 @@ namespace HiveonBackend.Controllers
                 "Developer"
             };
 
-            if (!allowedRoles.Contains(dto.Role))
+            if (!allowedRoles.Contains(role))
                 return BadRequest("Invalid role.");
 
             var token = Guid.NewGuid().ToString("N");
@@ -91,8 +103,8 @@ namespace HiveonBackend.Controllers
             var invite = new WorkspaceInvitation
             {
                 WorkspaceId = workspaceId,
-                Email = dto.Email.Trim().ToLower(),
-                Role = dto.Role,
+                Email = email,
+                Role = role,
                 Token = token,
                 JoinCode = joinCode,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
@@ -103,8 +115,10 @@ namespace HiveonBackend.Controllers
             _db.WorkspaceInvitations.Add(invite);
             await _db.SaveChangesAsync();
 
-            var inviteUrl =
-                $"{_config["Frontend:BaseUrl"]}/invite?token={token}";
+            var frontendBaseUrl = _config["Frontend:BaseUrl"] ?? _config["Frontend:InviteUrlBase"];
+            var inviteUrl = string.IsNullOrWhiteSpace(frontendBaseUrl)
+                ? $"/invite?token={token}"
+                : $"{frontendBaseUrl.TrimEnd('/')}/invite?token={token}";
 
             // ✅ Send email with BOTH token link and join code
             await _emailService.SendInviteEmail(

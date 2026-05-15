@@ -5,9 +5,9 @@ namespace HiveonBackend.DTOs
     public class WorkspaceInviteDto
     {
         [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string Role { get; set; } // ProductOwner, Admin, Member, Viewer
+        public string Role { get; set; } = string.Empty; // ProductOwner, Admin, Member, Viewer
     }
 }
