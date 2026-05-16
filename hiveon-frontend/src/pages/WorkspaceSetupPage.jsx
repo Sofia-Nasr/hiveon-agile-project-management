@@ -53,6 +53,7 @@ export default function WorkspaceSetupPage() {
     const data = await switchWorkspace(ws.id);
 
     // Store NEW JWT with workspaceId claim
+    if (!data?.token) throw new Error("Workspace creation did not return a valid token.");
     selectWorkspace(data.token);
 
     setNewName("");
@@ -70,6 +71,7 @@ export default function WorkspaceSetupPage() {
   async function handleSelect(workspaceId) {
     try {
       const data = await switchWorkspace(workspaceId);
+      if (!data?.token) throw new Error("Workspace switch did not return a valid token.");
 
       selectWorkspace(data.token); // 🔧 KEY FIX
       navigate("/projects", { replace: true });
@@ -79,7 +81,7 @@ export default function WorkspaceSetupPage() {
     }
   }
 
-  async function joinWorkspace() {
+  async function handleJoinWorkspace() {
     if (!joinCode.trim()) return;
 
     try {
@@ -87,6 +89,7 @@ export default function WorkspaceSetupPage() {
       setError("");
 
       const data = await joinWorkspace(joinCode.trim());
+      if (!data?.token) throw new Error("Workspace join did not return a valid token.");
       selectWorkspace(data.token); // 🔧 KEY FIX
       navigate("/projects", { replace: true });
     } catch (err) {
@@ -153,7 +156,7 @@ export default function WorkspaceSetupPage() {
     />
 
     <button
-      onClick={joinWorkspace}
+      onClick={handleJoinWorkspace}
       disabled={joining}
       className={styles.createBtn}
     >
