@@ -1,8 +1,10 @@
 /* Base Styles with soft, professional background */
+/* Base Styles with soft, professional background */
 .wrap {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+  width: 100%;
   /* softer, footer-like gradient */
   background: radial-gradient(
     circle at top,
@@ -35,11 +37,13 @@
   display: flex; 
   justify-content: flex-start; 
   width: 100%; 
+  max-width: 100%;
   box-sizing: border-box; 
   align-items: center; 
   gap: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .header:hover {
@@ -96,6 +100,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .authButton::before {
@@ -132,6 +137,75 @@
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
 }
 
+@media (max-width: 1024px) {
+  .authButtonsContainer {
+    gap: 12px;
+    top: 15px;
+    right: 15px;
+  }
+  .authButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem 1.25rem;
+  }
+  .authButtonsContainer {
+    flex-direction: column;
+    gap: 8px;
+    top: auto;
+    right: auto;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    width: auto;
+    z-index: 100;
+    margin-bottom: 8px;
+    display: none;
+  }
+  .authButton {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 0.75rem 1rem;
+    gap: 8px;
+  }
+  .hexagonSmall {
+    width: 32px;
+    height: 32px;
+  }
+  .header h2 {
+    font-size: 1rem;
+  }
+  .authButtonsContainer {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    bottom: auto;
+    left: auto;
+    flex-direction: row;
+    transform: none;
+    gap: 6px;
+    display: flex;
+    width: auto;
+    margin-bottom: 0;
+  }
+  .authButton {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 5px;
+  }
+}
+
 /* Main Content Animation */
 .mainContent { 
   padding: 2rem; 
@@ -151,12 +225,29 @@
   }
 }
 
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 1rem;
+    margin-top: 65px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mainContent {
+    padding: 0.75rem;
+    margin-top: 60px;
+  }
+}
+  }
+}
+
 /* Hero Section with softer footer-like palette */
 .heroSection {
   position: relative;
   text-align: center;
   padding: 6rem 2rem 8rem;
-  width: 100vw;
+  width: 100%;
+  max-width: 100vw;
   background: linear-gradient(
     135deg,
     rgba(255, 251, 235, 0.98) 0%,
@@ -167,6 +258,7 @@
   clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
   margin-bottom: 3rem;
   overflow: hidden;
+  box-sizing: border-box;
   box-shadow: 0 20px 60px rgba(148, 119, 37, 0.18);
 }
 
@@ -590,10 +682,72 @@
     gap: 1rem;
   }
   .heroSection { 
-    padding: 4rem 1rem 6rem;
+    padding: 3.5rem 1.5rem 5rem;
     clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%);
+    margin-bottom: 2rem;
   }
-  .header {\n    padding: 1rem 1.5rem;\n  }\n  .mainContent {\n    padding: 1rem;\n  }\n}\n\n@media (max-width: 640px) {\n  .title {\n    font-size: 2rem;\n    margin-bottom: 0.8rem;\n  }\n  .subtitle {\n    font-size: 0.95rem;\n    margin: 0 auto 1.2rem;\n    line-height: 1.6;\n  }\n  .rotatingHex {\n    width: 60px;\n    height: 60px;\n    margin: 0 auto 20px;\n  }\n  .featuresGrid {\n    grid-template-columns: 1fr;\n    gap: 0.75rem;\n  }\n  .featureCard {\n    padding: 1rem;\n  }\n  .buttonContainer {\n    flex-direction: column;\n    gap: 0.75rem;\n    width: 100%;\n  }\n  .primaryBtn,\n  .secondaryBtn {\n    width: 100%;\n    padding: 10px 20px;\n    font-size: 14px;\n  }\n  .heroSection {\n    padding: 3rem 0.75rem 4rem;\n  }\n  .header {\n    padding: 0.75rem 1rem;\n    gap: 8px;\n  }\n  .authButtonsContainer {\n    top: 10px;\n    right: 10px;\n    gap: 10px;\n  }\n  .authButton {\n    padding: 8px 16px;\n    font-size: 13px;\n  }\n  .mainContent {\n    padding: 0.75rem;\n    margin-top: 70px;\n  }\n  .divider {\n    width: 60px;\n    height: 3px;\n  }
+  .header {
+    padding: 1rem 1.25rem;
+  }
+  .mainContent {
+    padding: 1rem;
+    margin-top: 65px;
+  }
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+    margin: 0 auto 1rem;
+    line-height: 1.5;
+    padding: 0 0.5rem;
+  }
+  .rotatingHex {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 15px;
+  }
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .featureCard {
+    padding: 0.75rem;
+  }
+  .buttonContainer {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  .heroSection {
+    padding: 2.5rem 1rem 3.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .header {
+    padding: 0.7rem 0.85rem;
+    gap: 6px;
+  }
+  .mainContent {
+    padding: 0.75rem;
+    margin-top: 58px;
+  }
+  .divider {
+    width: 50px;
+    height: 2px;
+  }
+}
 /* Footer Section - App-style footer instead of free trial CTA */
 .footerSection {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 40%, #fffbeb 100%);
