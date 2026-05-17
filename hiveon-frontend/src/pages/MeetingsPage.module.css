@@ -198,6 +198,90 @@ select:focus {
   gap: 0.5rem;
 }
 
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px 12px;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.7rem;
+  }
+  .card {
+    padding: 0.6rem 0.7rem;
+  }
+  .cardTitle {
+    font-size: 0.9rem;
+  }
+  .cardDescription {
+    font-size: 0.8rem;
+  }
+  .modal {
+    padding: 1.5rem 1.2rem;
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px 8px;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .card {
+    padding: 0.5rem 0.6rem;
+  }
+  .cardTitle {
+    font-size: 0.85rem;
+  }
+  .cardMeta {
+    font-size: 0.7rem;
+  }
+  .todayBadge {
+    font-size: 0.65rem;
+    padding: 0.05rem 0.3rem;
+  }
+  .meetLink {
+    font-size: 0.75rem;
+  }
+  .modal {
+    padding: 1.25rem 1rem;
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+  .modalHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .modalTitle {
+    font-size: 1.1rem;
+  }
+  .actions {
+    flex-direction: column-reverse;
+  }
+  .actions button {
+    width: 100%;
+  }
+}
+
 /* Buttons reused from projects */
 
 .primaryBtn {

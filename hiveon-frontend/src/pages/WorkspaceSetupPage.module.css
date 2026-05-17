@@ -151,6 +151,40 @@ max-width: 460px;
   margin-top: 18px;
 }
 
-
-
-
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  .card {
+    width: 100%;
+    padding: 1.5rem 1rem;
+    border-radius: 10px;
+  }
+  .title {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+  .subtitle {
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .workspaceItem {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .createBox {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .input,
+  .createBtn {
+    height: 40px;
+    font-size: 13px;
+    padding: 0 12px;
+  }
+  .error {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+}

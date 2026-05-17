@@ -12,3 +12,12 @@
   color: #b91c1c;
   margin-top: 12px;
 }
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  body {
+    font-size: 13px;
+  }
+}

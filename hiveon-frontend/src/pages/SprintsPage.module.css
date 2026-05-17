@@ -79,6 +79,105 @@
   box-shadow: var(--shadow-sm);
 }
 
+@media (max-width: 1100px) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px 12px;
+  }
+  .planning {
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+  }
+  .planningHeader {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .sprintNav h2 {
+    font-size: 18px;
+  }
+  .tiles {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .tile {
+    padding: 0.6rem 0.7rem;
+  }
+  .tileLabel {
+    font-size: 11px;
+  }
+  .tileValue {
+    font-size: 18px;
+  }
+  .board {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.7rem;
+  }
+  .columnHead {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .columnBody {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px 8px;
+  }
+  .planning {
+    padding: 12px;
+  }
+  .sprintNav {
+    gap: 10px;
+  }
+  .sprintNav h2 {
+    font-size: 16px;
+  }
+  .navBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tile {
+    padding: 0.5rem 0.6rem;
+  }
+  .tileLabel {
+    font-size: 10px;
+  }
+  .tileValue {
+    font-size: 16px;
+  }
+  .board {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .columnHead {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .columnBody {
+    padding: 8px;
+    gap: 8px;
+    min-height: 50px;
+  }
+}
+
 .planningHeader {
   display: flex;
   justify-content: space-between;

@@ -25,3 +25,34 @@ p {
   margin: 0;
   color: #4b5563;
 }
+
+/* Mobile-friendly global styles */
+@media (max-width: 768px) {
+  html, body, #root {
+    font-size: 14px;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  html, body, #root {
+    font-size: 13px;
+  }
+  h1 {
+    font-size: 1.3rem;
+  }
+  h2 {
+    font-size: 1.1rem;
+  }
+  h3 {
+    font-size: 1rem;
+  }
+}

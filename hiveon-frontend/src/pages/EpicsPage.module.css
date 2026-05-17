@@ -103,6 +103,89 @@
   gap: 0.9rem;
 }
 
+@media (max-width: 1200px) {
+  .board {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px 12px;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .headerRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .headerStats {
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .metric {
+    padding: 0.4rem 0.6rem;
+    font-size: 12px;
+  }
+  .metricLabel {
+    font-size: 10px;
+  }
+  .metricValue,
+  .metricValueDone {
+    font-size: 14px;
+  }
+  .board {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.7rem;
+  }
+  .columnHead {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .columnBody {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px 8px;
+  }
+  .h1 {
+    font-size: 1.2rem;
+  }
+  .sub {
+    font-size: 0.8rem;
+  }
+  .header {
+    flex-direction: column;
+  }
+  .headerRight {
+    width: 100%;
+  }
+  .metric {
+    padding: 0.3rem 0.5rem;
+    flex: 1;
+    min-width: calc(50% - 4px);
+  }
+  .board {
+    grid-template-columns: 1fr;
+  }
+  .columnHead {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .columnBody {
+    padding: 8px;
+    gap: 8px;
+  }
+}
+
 /* COLUMNS */
 
 .column {

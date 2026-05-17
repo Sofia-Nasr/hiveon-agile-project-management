@@ -212,3 +212,31 @@ background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
 .nav::-webkit-scrollbar {
   display: none;
 }
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: var(--sidebar-width, 60px);
+  }
+  .logo {
+    gap: 0;
+  }
+  .navLabel {
+    display: none;
+  }
+  .logoText {
+    display: none;
+  }
+  .createTicketBtn {
+    justify-content: center;
+  }
+  .createTicketBtn span {
+    display: none;
+  }
+  .inviteBtn {
+    width: 44px;
+    height: 44px;
+    margin: 8px;
+    padding: 0;
+    justify-content: center;
+  }
+}

@@ -111,3 +111,92 @@
   .metrics { grid-template-columns: 1fr 1fr; }
   .grid { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 768px) {
+  .page {
+    gap: 12px;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    padding: 10px;
+    gap: 8px;
+  }
+  .statIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  .statLabel {
+    font-size: 13px;
+  }
+  .statValue {
+    font-size: 18px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .panelHeader {
+    padding: 10px 12px;
+  }
+  .panelHeader h3 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    gap: 10px;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .stat {
+    padding: 8px;
+    gap: 8px;
+  }
+  .statIcon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  .statLabel {
+    font-size: 12px;
+  }
+  .statValue {
+    font-size: 16px;
+  }
+  .statSub {
+    font-size: 10px;
+  }
+  .taskItem,
+  .prItem,
+  .rowBetween {
+    padding: 10px;
+  }
+  .taskTitle,
+  .prTitle,
+  .itemTitle {
+    font-size: 13px;
+  }
+  .taskMeta,
+  .prMeta,
+  .muted {
+    font-size: 11px;
+  }
+}
