@@ -80,7 +80,7 @@ export default function HomePage() {
           />
           <h1 className={styles.title}>Welcome to Hiveon</h1>
           <p className={styles.subtitle}>
-            An intuitive agile workspace for managing epics, stories, bugs,
+            An agile workspace for managing epics, stories, bugs,
             and sprints — designed to help teams plan, track, and deliver
             work more efficiently.
           </p>
