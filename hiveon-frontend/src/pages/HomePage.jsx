@@ -80,9 +80,9 @@ export default function HomePage() {
           />
           <h1 className={styles.title}>Welcome to Hiveon</h1>
           <p className={styles.subtitle}>
-            An agile project management tool for epics, stories, bugs,
-            and sprints — built as a final year project to streamline how
-            teams work.
+            An intuitive agile workspace for managing epics, stories, bugs,
+            and sprints — designed to help teams plan, track, and deliver
+            work more efficiently.
           </p>
           <div className={styles.divider} />
           <div className={styles.buttonContainer}>
