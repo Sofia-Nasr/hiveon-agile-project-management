@@ -215,24 +215,27 @@ background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
 
 @media (max-width: 768px) {
   .sidebar {
-    width: var(--sidebar-width, 60px);
+    width: var(--sidebar-width, 240px);
   }
-  .logo {
+  .collapsed {
+    width: 80px;
+  }
+  .collapsed .logo {
     gap: 0;
   }
-  .navLabel {
+  .collapsed .navLabel {
     display: none;
   }
-  .logoText {
+  .collapsed .logoText {
     display: none;
   }
-  .createTicketBtn {
+  .collapsed .createTicketBtn {
     justify-content: center;
   }
-  .createTicketBtn span {
+  .collapsed .createTicketBtn span {
     display: none;
   }
-  .inviteBtn {
+  .collapsed .inviteBtn {
     width: 44px;
     height: 44px;
     margin: 8px;

@@ -5,6 +5,7 @@
 
 .current {
   width: 100%;
+  min-width: 0;
   padding: 10px 14px;
   background: #facc15; /* match sidebar yellow */
   border: 2px solid #000;
@@ -15,6 +16,13 @@
   align-items: center;
   cursor: pointer;
   font-weight: 600;
+}
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .current:hover {
@@ -28,8 +36,9 @@
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: 100%;
-    background: linear-gradient(135deg, #fffbe6, #fff1b8);           
+  min-width: 220px;
+  width: max-content;
+  background: linear-gradient(135deg, #fffbe6, #fff1b8);
   border-radius: 12px;
   padding: 12px;
   z-index: 100;
