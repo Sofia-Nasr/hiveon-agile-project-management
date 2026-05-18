@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
+using System.Net;
+using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 
 public interface IEmailService
@@ -26,15 +24,10 @@ public interface IEmailService
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
-    private readonly IHttpClientFactory _httpClientFactory;
 
-    public EmailService(
-        IConfiguration config,
-        IHttpClientFactory httpClientFactory
-    )
+    public EmailService(IConfiguration config)
     {
         _config = config;
-        _httpClientFactory = httpClientFactory;
     }
 
     public async Task SendInviteEmail(
@@ -45,30 +38,22 @@ public class EmailService : IEmailService
         string role
     )
     {
-        var apiKey = _config["Email:ApiKey"];
+        var smtp = BuildSmtpClient();
+
         var fromEmail = _config["Email:FromEmail"];
-
-        if (string.IsNullOrWhiteSpace(apiKey))
-            throw new InvalidOperationException(
-                "Missing email configuration: Email:ApiKey"
-            );
-
-        if (string.IsNullOrWhiteSpace(fromEmail))
-            throw new InvalidOperationException(
-                "Missing email configuration: Email:FromEmail"
-            );
+        var fromName = _config["Email:FromName"] ?? "Hiveon";
 
         var htmlBody = $@"
 <div style='font-family: Arial, sans-serif; background-color:#f5f7fb; padding:40px 20px;'>
-    
+
     <div style='max-width:600px; margin:auto; background:white; border-radius:16px; overflow:hidden; border:1px solid #e5e7eb;'>
 
         <div style='padding:32px 32px 16px 32px; text-align:center;'>
 
             <div style='display:inline-flex; align-items:center; gap:10px;'>
 
-                <div style='width:18px; height:18px; background:#f5b301;
-                            clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);'>
+                <div style='font-size:24px; color:#f5b301; line-height:1;'>
+                    ⬢
                 </div>
 
                 <span style='font-size:28px; font-weight:700; color:#111827;'>
@@ -132,38 +117,17 @@ public class EmailService : IEmailService
 </div>
 ";
 
-        var payload = new
+        var message = new MailMessage
         {
-            from = fromEmail,
-            to = toEmail,
-            subject = $"You're invited to join {workspaceName} on Hiveon",
-            html = htmlBody
+            From = new MailAddress(fromEmail, fromName),
+            Subject = $"You're invited to join {workspaceName} on Hiveon",
+            Body = htmlBody,
+            IsBodyHtml = true
         };
 
-        var client = _httpClientFactory.CreateClient();
+        message.To.Add(toEmail);
 
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", apiKey);
-
-        var content = new StringContent(
-            JsonSerializer.Serialize(payload),
-            Encoding.UTF8,
-            "application/json"
-        );
-
-        var response = await client.PostAsync(
-            "https://api.resend.com/emails",
-            content
-        );
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var body = await response.Content.ReadAsStringAsync();
-
-            throw new InvalidOperationException(
-                $"Resend send failed: {response.StatusCode}: {body}"
-            );
-        }
+        await smtp.SendMailAsync(message);
     }
 
     public async Task SendMentionEmail(
@@ -173,23 +137,19 @@ public class EmailService : IEmailService
         string entityId
     )
     {
-        var apiKey = _config["Email:ApiKey"];
+        var smtp = BuildSmtpClient();
+
         var fromEmail = _config["Email:FromEmail"];
-
-        if (string.IsNullOrWhiteSpace(apiKey))
-            throw new InvalidOperationException(
-                "Missing email configuration: Email:ApiKey"
-            );
-
-        if (string.IsNullOrWhiteSpace(fromEmail))
-            throw new InvalidOperationException(
-                "Missing email configuration: Email:FromEmail"
-            );
+        var fromName = _config["Email:FromName"] ?? "Hiveon";
 
         var frontendUrl = _config["Frontend:BaseUrl"];
         var link = $"{frontendUrl}/sprints";
 
-        var messageText = $@"
+        var message = new MailMessage
+        {
+            From = new MailAddress(fromEmail, fromName),
+            Subject = "You were mentioned on Hiveon",
+            Body = $@"
 You were mentioned in a comment on Hiveon.
 
 Comment:
@@ -199,39 +159,29 @@ View here:
 {link}
 
 — Hiveon
-";
-
-        var payload = new
-        {
-            from = fromEmail,
-            to = toEmail,
-            subject = "You were mentioned on Hiveon",
-            text = messageText
+",
+            IsBodyHtml = false
         };
 
-        var client = _httpClientFactory.CreateClient();
+        message.To.Add(toEmail);
 
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", apiKey);
+        await smtp.SendMailAsync(message);
+    }
 
-        var content = new StringContent(
-            JsonSerializer.Serialize(payload),
-            Encoding.UTF8,
-            "application/json"
-        );
-
-        var response = await client.PostAsync(
-            "https://api.resend.com/emails",
-            content
-        );
-
-        if (!response.IsSuccessStatusCode)
+    private SmtpClient BuildSmtpClient()
+    {
+        return new SmtpClient(
+            _config["Email:SmtpHost"],
+            int.Parse(_config["Email:SmtpPort"])
+        )
         {
-            var body = await response.Content.ReadAsStringAsync();
-
-            throw new InvalidOperationException(
-                $"Resend send failed: {response.StatusCode}: {body}"
-            );
-        }
+            EnableSsl = true,
+            UseDefaultCredentials = false,
+            DeliveryMethod = SmtpDeliveryMethod.Network,
+            Credentials = new NetworkCredential(
+                _config["Email:Username"],
+                _config["Email:Password"]
+            )
+        };
     }
 }
