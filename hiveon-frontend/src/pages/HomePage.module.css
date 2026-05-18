@@ -156,21 +156,23 @@
   .authButtonsContainer {
     flex-direction: column;
     gap: 8px;
-    top: auto;
-    right: auto;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 12px;
+    right: 12px;
+    bottom: auto;
+    left: auto;
     position: absolute;
+    transform: none;
     width: auto;
     z-index: 100;
     margin-bottom: 8px;
-    display: none;
+    display: flex;
+    align-items: flex-end;
   }
   .authButton {
-    padding: 8px 16px;
+    padding: 8px 14px;
     font-size: 13px;
     border-radius: 6px;
+    min-width: 100px;
   }
 }
 
@@ -187,22 +189,25 @@
     font-size: 1rem;
   }
   .authButtonsContainer {
-    position: fixed;
+    position: absolute;
     top: 10px;
     right: 10px;
     bottom: auto;
     left: auto;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: flex-end;
     transform: none;
     gap: 6px;
     display: flex;
     width: auto;
     margin-bottom: 0;
+    z-index: 100;
   }
   .authButton {
-    padding: 6px 12px;
+    padding: 6px 10px;
     font-size: 12px;
     border-radius: 5px;
+    min-width: 90px;
   }
 }
 
@@ -236,8 +241,6 @@
   .mainContent {
     padding: 0.75rem;
     margin-top: 60px;
-  }
-}
   }
 }
 

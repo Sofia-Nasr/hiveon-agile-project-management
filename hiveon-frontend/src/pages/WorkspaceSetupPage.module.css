@@ -7,16 +7,17 @@
 }
 
 .card {
-  width: 440px;
+  width: 100%;
+  max-width: 460px;
   background: #fff;
   padding: 36px;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.12);
   border: 2px solid #fbc02d;
-max-width: 460px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-sizing: border-box;
 }
 .list {
   display: flex;
