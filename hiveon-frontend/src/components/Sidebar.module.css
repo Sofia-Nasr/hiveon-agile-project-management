@@ -215,7 +215,10 @@ background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
 
 @media (max-width: 768px) {
   .sidebar {
-    width: var(--sidebar-width, 240px);
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 0;
   }
   .collapsed {
     width: 80px;
