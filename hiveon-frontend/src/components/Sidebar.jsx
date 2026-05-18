@@ -80,6 +80,8 @@ export default function Sidebar() {
   const openCreateTicket = () =>
     window.dispatchEvent(new CustomEvent("open-create-ticket"));
 
+  const closeMobileSidebar = () => setMobileOpen(false);
+
   const mobileToggleButton = (
     <button
       className={styles.mobileToggle}
@@ -94,10 +96,11 @@ export default function Sidebar() {
   return (
     <>
       {isMobile && !mobileOpen && mobileToggleButton}
+      {isMobile && mobileOpen && (
+        <div className={styles.mobileBackdrop} onClick={closeMobileSidebar} />
+      )}
       <aside
-        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${
-          isMobile ? styles.mobile : ""
-        } ${isMobile ? (mobileOpen ? styles.mobileOpen : styles.mobileClosed) : ""}`}
+        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${isMobile ? (mobileOpen ? styles.mobileOpen : styles.mobileClosed) : ""}`}
       >
         {/* HEADER */}
         <div className={styles.header}>
@@ -152,7 +155,10 @@ export default function Sidebar() {
         <nav className={styles.nav}>
           <button
             className={styles.createTicketBtn}
-            onClick={openCreateTicket}
+            onClick={() => {
+              openCreateTicket();
+              if (isMobile) closeMobileSidebar();
+            }}
             title="Create Ticket"
           >
             <FaPlusCircle className={styles.navIcon} />
@@ -168,6 +174,7 @@ export default function Sidebar() {
               icon={<FaChartLine />}
               active={isActive("/pm")}
               collapsed={collapsed}
+              onNavigate={isMobile ? closeMobileSidebar : undefined}
             />
           )}
 
@@ -177,14 +184,16 @@ export default function Sidebar() {
             icon={<FaFolderOpen />}
             active={isActive("/projects")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
-            <NavLink
+          <NavLink
             to="/team"
             label="Teams"
             icon={<FaUsers />}
             active={isActive("/team")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
           <NavLink
@@ -193,6 +202,7 @@ export default function Sidebar() {
             icon={<FaLayerGroup />}
             active={isActive("/epics")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
           <NavLink
@@ -201,6 +211,7 @@ export default function Sidebar() {
             icon={<FaClipboardList />}
             active={isActive("/backlog")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
           <NavLink
@@ -209,6 +220,7 @@ export default function Sidebar() {
             icon={<FaRunning />}
             active={isActive("/sprints")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
           <NavLink
@@ -217,6 +229,7 @@ export default function Sidebar() {
             icon={<FaColumns />}
             active={isActive("/boards")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
           <NavLink
@@ -225,6 +238,7 @@ export default function Sidebar() {
             icon={<FaVideo />}
             active={isActive("/meetings")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
           <NavLink
@@ -233,6 +247,7 @@ export default function Sidebar() {
             icon={<FaExclamationTriangle />}
             active={isActive("/risks")}
             collapsed={collapsed}
+            onNavigate={isMobile ? closeMobileSidebar : undefined}
           />
 
         </nav>
@@ -253,12 +268,13 @@ export default function Sidebar() {
   );
 }
 
-function NavLink({ to, label, icon, active, collapsed }) {
+function NavLink({ to, label, icon, active, collapsed, onNavigate }) {
   return (
     <Link
       to={to}
       className={`${styles.navItem} ${active ? styles.active : ""}`}
       title={collapsed ? label : undefined}
+      onClick={onNavigate}
     >
       <div className={styles.navIcon}>{icon}</div>
       {!collapsed && <span className={styles.navLabel}>{label}</span>}

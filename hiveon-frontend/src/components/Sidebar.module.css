@@ -237,11 +237,19 @@ background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: min(72%, 320px);
   height: 100%;
   z-index: 1000;
   overflow-y: auto;
   background: linear-gradient(180deg, #ffd84a 0%, #ffe781 55%, #fff7cf 100%);
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.15);
+}
+
+.mobileBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15, 23, 42, 0.25);
 }
 
 @media (max-width: 768px) {
