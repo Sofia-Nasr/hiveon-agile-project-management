@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
+  FaBars,
+  FaTimes,
   FaChevronLeft,
   FaChevronRight,
   FaChartLine,
@@ -30,6 +32,7 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -41,6 +44,9 @@ export default function Sidebar() {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
+      if (!mobile) {
+        setMobileOpen(false);
+      }
     };
 
     handleResize();
@@ -50,9 +56,17 @@ export default function Sidebar() {
 
   useEffect(() => {
     if (isMobile) {
-      setCollapsed(true);
+      setCollapsed(false);
+      setMobileOpen(false);
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   const toggle = () => setCollapsed((c) => !c);
 
@@ -66,10 +80,24 @@ export default function Sidebar() {
   const openCreateTicket = () =>
     window.dispatchEvent(new CustomEvent("open-create-ticket"));
 
+  const mobileToggleButton = (
+    <button
+      className={styles.mobileToggle}
+      type="button"
+      onClick={() => setMobileOpen(true)}
+      aria-label="Open menu"
+    >
+      <FaBars />
+    </button>
+  );
+
   return (
     <>
+      {isMobile && !mobileOpen && mobileToggleButton}
       <aside
-        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}
+        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""} ${
+          isMobile ? styles.mobile : ""
+        } ${isMobile ? (mobileOpen ? styles.mobileOpen : styles.mobileClosed) : ""}`}
       >
         {/* HEADER */}
         <div className={styles.header}>
@@ -89,8 +117,18 @@ export default function Sidebar() {
               )}
             </div>
 
-            <button className={styles.collapseBtn} onClick={toggle}>
-              {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
+            <button
+              className={styles.collapseBtn}
+              type="button"
+              onClick={() => {
+                if (isMobile) {
+                  setMobileOpen(false);
+                } else {
+                  toggle();
+                }
+              }}
+            >
+              {isMobile ? <FaTimes /> : collapsed ? <FaChevronRight /> : <FaChevronLeft />}
             </button>
           </div>
 
