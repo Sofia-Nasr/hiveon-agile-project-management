@@ -50,9 +50,7 @@ export default function SprintsPage() {
   const [projectId, setProjectId] = useState(
     localStorage.getItem("currentProjectId") || ""
   );
-  const [projectName] = useState(
-    localStorage.getItem("currentProjectName") || ""
-  );
+  const projectName = localStorage.getItem("currentProjectName") || "";
 
   const [sprints, setSprints] = useState([]);
   const [sprintIndex, setSprintIndex] = useState(0);
@@ -212,7 +210,7 @@ export default function SprintsPage() {
           <h1 className={styles.h1}>{projectName || "Select a project"}</h1>
         </div>
         <div className={styles.headerRight}>
-          <ProjectPicker value={projectId} onChange={setProjectId} />
+          <ProjectPicker value={projectId} onChange={setProjectId} showLabel={false} />
 
           {/* Type filter pills */}
           <div className={styles.filterPills}>
@@ -282,11 +280,10 @@ export default function SprintsPage() {
 
           <div className={styles.bannerRight}>
             <div className={styles.tiles}>
-              <Tile label="Total" value={sprintTasks.length} icon="📋" />
+              <Tile label="Total" value={sprintTasks.length} />
               <Tile
                 label="Done"
                 value={doneCount}
-                icon="✅"
                 variant="success"
               />
               <Tile
@@ -294,7 +291,6 @@ export default function SprintsPage() {
                 value={
                   sprintTasks.filter((t) => t.status === "In Progress").length
                 }
-                icon="⚡"
                 variant="active"
               />
               <Tile
@@ -310,7 +306,6 @@ export default function SprintsPage() {
                       )
                     : "—"
                 }
-                icon="🗓"
               />
             </div>
 
@@ -655,7 +650,6 @@ function fmtDate(d) {
 function Tile({ label, value, icon, variant }) {
   return (
     <div className={`${styles.tile} ${variant ? styles[`tile_${variant}`] : ""}`}>
-      <div className={styles.tileIcon}>{icon}</div>
       <div className={styles.tileValue}>{value}</div>
       <div className={styles.tileLabel}>{label}</div>
     </div>
