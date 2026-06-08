@@ -1,181 +1,221 @@
+/* EpicCard.module.css */
+
 .card {
   position: relative;
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 0.85rem;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  transition: box-shadow .15s ease, transform .15s ease;
+  border: 1px solid #ede9e0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  display: flex;
+  overflow: hidden;
+  cursor: grab;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.15s;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-}
-.accent_todo {
-  border-left: 4px solid #94a3b8;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  border-color: #d8d2c6;
 }
 
-.accent_inprogress {
-  border-left: 4px solid #3b82f6;
+.card:active {
+  cursor: grabbing;
 }
 
-.accent_testing {
-  border-left: 4px solid #f59e0b;
+/* Left accent bar, driven by CSS var set inline */
+.accentBar {
+  width: 4px;
+  flex-shrink: 0;
+  background: var(--accent, #94a3b8);
+  border-radius: 0.85rem 0 0 0.85rem;
 }
 
-.accent_inreview {
-  border-left: 4px solid #8b5cf6;
+.inner {
+  flex: 1;
+  padding: 0.7rem 0.8rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
-.accent_done {
-  border-left: 4px solid #22c55e;
-}
-
-.accent_blocked {
-  border-left: 4px solid #ef4444;
-}
-/* ===== TOP ROW ===== */
-
+/* ── Top row ── */
 .topRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  gap: 0.4rem;
 }
 
 .code {
-  font-size: 0.7rem;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #9ca3af;
   background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  padding: 1px 5px;
+  letter-spacing: 0.04em;
+  font-family: 'DM Mono', 'Fira Code', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.topRight {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ===== STATUS (NEUTRAL) ===== */
-
+/* ── Status badge ── */
 .status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 3px 8px;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
-  box-shadow: none;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 .statusDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #6b7280;
+  flex-shrink: 0;
 }
 
-/* ❌ kill colored status variants */
-[class^="status_"] {
-  color: #374151 !important;
-}
-[class^="status_"] .statusDot {
-  background: #6b7280 !important;
-}
-
-/* ===== MAIN TEXT ===== */
-
+/* ── Main text ── */
 .title {
   margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 700;
   color: #111827;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  /* clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .desc {
-  margin-top: 4px;
-  font-size: 0.8rem;
+  margin: 0;
+  font-size: 0.75rem;
   color: #6b7280;
-  line-height: 1.4;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* ===== FOOTER ===== */
-
+/* ── Footer ── */
 .footer {
-  margin-top: 10px;
+  margin-top: 0.2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
-/* ===== PRIORITY (NEUTRAL) ===== */
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
 
+/* ── Priority pill ── */
 .pill {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  border: 1px solid transparent;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
-/* ❌ remove priority colors */
-.pill_high,
-.pill_medium,
-.pill_low {
-  background: #f3f4f6;
-  color: #374151;
-  border-color: #e5e7eb;
+.pillIcon {
+  font-size: 0.5rem;
+  line-height: 1;
 }
 
-/* ===== ASSIGNEE ===== */
+/* ── Due date ── */
+.due {
+  font-size: 0.68rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  font-weight: 500;
+}
 
+.dueOverdue {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ── Assignee ── */
 .assignee {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .avatar,
 .avatarFallback {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #e5e7eb;
-  color: #374151;
-  font-size: 0.7rem;
-  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.58rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e5e7eb;
-  box-shadow: none;
 }
 
 .assigneeName {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #6b7280;
+  font-weight: 500;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ===== REFRESH BUTTON (SUBTLE) ===== */
-
+/* ── Refresh button ── */
 .refreshBtn {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 5px;
+  right: 5px;
   border: none;
   background: transparent;
-  font-size: 0.8rem;
-  color: #9ca3af;
+  font-size: 0.78rem;
+  color: #d1d5db;
   cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.12s, background 0.12s;
+}
+
+.card:hover .refreshBtn {
+  opacity: 1;
 }
 
 .refreshBtn:hover {
   color: #374151;
+  background: #f3f4f6;
 }
