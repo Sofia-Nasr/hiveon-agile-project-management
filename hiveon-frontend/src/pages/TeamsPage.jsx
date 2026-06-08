@@ -229,6 +229,9 @@ export default function TeamsPage() {
   const [leadEdits, setLeadEdits] = useState({});
   const [editingTeamId, setEditingTeamId] = useState(null);
 
+  const totalMembers = teams.reduce((sum, team) => sum + (team.members?.length || 0), 0);
+  const teamsWithLeadCount = teams.filter((team) => team.teamLeadId).length;
+
   useEffect(() => {
     if (!projectId) {
       setTeams([]);
@@ -637,7 +640,27 @@ export default function TeamsPage() {
             </div>
           )}
 
-          {!loading && (
+          {projectId && !loading && teams.length > 0 && (
+            <div className={styles.summaryGrid}>
+              <div className={styles.summaryCard}>
+                <div className={styles.summaryLabel}>Teams</div>
+                <div className={styles.summaryValue}>{teams.length}</div>
+                <div className={styles.summaryHint}>Active teams in this project</div>
+              </div>
+              <div className={styles.summaryCard}>
+                <div className={styles.summaryLabel}>Team leads</div>
+                <div className={styles.summaryValue}>{teamsWithLeadCount}</div>
+                <div className={styles.summaryHint}>Teams with an assigned lead</div>
+              </div>
+              <div className={styles.summaryCard}>
+                <div className={styles.summaryLabel}>Members</div>
+                <div className={styles.summaryValue}>{totalMembers}</div>
+                <div className={styles.summaryHint}>Members across all teams</div>
+              </div>
+            </div>
+          )}
+
+          {projectId && !loading && (
             <div className={styles.teamsList}>
               {teams.map((team) => (
                 <TeamCard
