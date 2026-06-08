@@ -306,7 +306,7 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
         className={styles.primaryBtn}
         onClick={() => setShowNewSprint(true)}
       >
-        Plan Sprint
+        Add Sprint
       </button>
     )}
 
