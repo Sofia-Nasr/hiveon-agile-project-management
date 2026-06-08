@@ -211,191 +211,140 @@ export default function PmDashboard() {
   );
 }
 
-// ================= BURNDOWN CHART =================
-
-function normalizeBurndownData(raw) {
-  if (!raw) return [];
-  if (Array.isArray(raw)) {
-    return raw
-      .filter(Boolean)
-      .map((point, index) => ({
-        label: point.label ?? point.day ?? `Day ${index + 1}`,
-        ideal: point.ideal ?? point.planned ?? 0,
-        actual: point.actual ?? point.remaining ?? 0,
-      }));
-  }
-
-  if (typeof raw === "object") {
-    if (Array.isArray(raw.data)) {
-      return raw.data.map((point, index) => ({
-        label: point.label ?? point.day ?? `Day ${index + 1}`,
-        ideal: point.ideal ?? point.planned ?? 0,
-        actual: point.actual ?? point.remaining ?? 0,
-      }));
-    }
-
-    if (Array.isArray(raw.labels) && Array.isArray(raw.ideal) && Array.isArray(raw.actual)) {
-      const count = Math.max(raw.labels.length, raw.ideal.length, raw.actual.length);
-      return Array.from({ length: count }, (_, index) => ({
-        label: raw.labels[index] ?? `Day ${index + 1}`,
-        ideal: raw.ideal[index] ?? 0,
-        actual: raw.actual[index] ?? 0,
-      }));
-    }
-
-    const keys = Object.keys(raw);
-    if (keys.length && keys.every((k) => typeof raw[k] === "number")) {
-      return keys.map((key) => ({ label: key, ideal: 0, actual: raw[key] }));
-    }
-  }
-
-  return [];
-}
+// ================= SPRINT PROGRESS CHART =================
+// API returns: [{ label: "Total", value: N }, { label: "Remaining", value: N }, { label: "Completed", value: N }]
 
 function BurndownChart({ data }) {
-  const points = normalizeBurndownData(data);
-
-  if (!points.length) {
-    return (
-      <div className={styles.chartEmpty}>
-        No burndown data available yet
-      </div>
-    );
+  if (!data || !data.length) {
+    return <div className={styles.chartEmpty}>No sprint data available yet</div>;
   }
 
-  const W = 680, H = 260;
-  const pad = { top: 20, right: 24, bottom: 44, left: 48 };
-  const chartW = W - pad.left - pad.right;
-  const chartH = H - pad.top - pad.bottom;
+  const get = (label) => data.find((d) => d.label === label)?.value ?? 0;
+  const total     = get("Total");
+  const completed = get("Completed");
+  const remaining = get("Remaining");
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  const maxVal = Math.max(...points.map((d) => Math.max(d.ideal ?? 0, d.actual ?? 0)), 1);
-  const xStep = points.length > 1 ? chartW / (points.length - 1) : chartW;
-
-  const toX = (i) => pad.left + i * xStep;
-  const toY = (v) => pad.top + chartH - (v / maxVal) * chartH;
-
-  const idealPath = points
-    .map((d, i) => `${i === 0 ? "M" : "L"}${toX(i)},${toY(d.ideal ?? 0)}`)
-    .join(" ");
-
-  const actualPath = points
-    .map((d, i) => `${i === 0 ? "M" : "L"}${toX(i)},${toY(d.actual ?? 0)}`)
-    .join(" ");
-
-  const actualFillPath =
-    actualPath +
-    ` L${toX(points.length - 1)},${pad.top + chartH} L${toX(0)},${pad.top + chartH} Z`;
-
-  const idealFillPath =
-    idealPath +
-    ` L${toX(points.length - 1)},${pad.top + chartH} L${toX(0)},${pad.top + chartH} Z`;
-
-  const yTicks = 5;
-  const yTickStep = maxVal / yTicks;
+  // Donut geometry
+  const R = 70, cx = 90, cy = 90, stroke = 18;
+  const circ = 2 * Math.PI * R;
+  const completedDash = total > 0 ? (completed / total) * circ : 0;
+  const remainingDash = total > 0 ? (remaining / total) * circ : 0;
+  const completedOffset = 0;
+  const remainingOffset = -completedDash;
 
   return (
     <div className={styles.chartWrap}>
-      <div className={styles.chartLegend}>
-        <div className={styles.legendItem}>
-          <span className={styles.legendLine} style={{ background: "#facc15" }} />
-          Ideal burndown
+      <div className={styles.chartInner}>
+
+        {/* DONUT */}
+        <div className={styles.donutWrap}>
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <defs>
+              <linearGradient id="compGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#facc15" />
+                <stop offset="100%" stopColor="#f59e0b" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Track */}
+            <circle
+              cx={cx} cy={cy} r={R}
+              fill="none"
+              stroke="#f1f5f9"
+              strokeWidth={stroke}
+            />
+
+            {/* Remaining arc */}
+            {remaining > 0 && (
+              <circle
+                cx={cx} cy={cy} r={R}
+                fill="none"
+                stroke="#e0e7ff"
+                strokeWidth={stroke}
+                strokeDasharray={`${remainingDash} ${circ - remainingDash}`}
+                strokeDashoffset={-completedDash}
+                strokeLinecap="butt"
+                transform={`rotate(-90 ${cx} ${cy})`}
+              />
+            )}
+
+            {/* Completed arc */}
+            {completed > 0 && (
+              <circle
+                cx={cx} cy={cy} r={R}
+                fill="none"
+                stroke="url(#compGrad)"
+                strokeWidth={stroke}
+                strokeDasharray={`${completedDash} ${circ - completedDash}`}
+                strokeDashoffset={0}
+                strokeLinecap="butt"
+                transform={`rotate(-90 ${cx} ${cy})`}
+                filter="url(#glow)"
+              />
+            )}
+
+            {/* Center text */}
+            <text x={cx} y={cy - 8} textAnchor="middle" fontSize="26" fontWeight="800" fill="#111827">
+              {pct}%
+            </text>
+            <text x={cx} y={cy + 12} textAnchor="middle" fontSize="11" fill="#9ca3af" fontWeight="500">
+              complete
+            </text>
+          </svg>
         </div>
-        <div className={styles.legendItem}>
-          <span className={styles.legendLine} style={{ background: "#3b82f6" }} />
-          Actual remaining
+
+        {/* STATS */}
+        <div className={styles.chartStats}>
+          <div className={styles.chartStatRow}>
+            <div className={styles.chartStatDot} style={{ background: "#f1f5f9", border: "2px solid #d1d5db" }} />
+            <div className={styles.chartStatLabel}>Total tasks</div>
+            <div className={styles.chartStatVal}>{total}</div>
+          </div>
+
+          <div className={styles.chartDivider} />
+
+          <div className={styles.chartStatRow}>
+            <div className={styles.chartStatDot} style={{ background: "linear-gradient(135deg,#facc15,#f59e0b)" }} />
+            <div className={styles.chartStatLabel}>Completed</div>
+            <div className={styles.chartStatVal} style={{ color: "#b45309" }}>{completed}</div>
+          </div>
+
+          <div className={styles.chartDivider} />
+
+          <div className={styles.chartStatRow}>
+            <div className={styles.chartStatDot} style={{ background: "#e0e7ff" }} />
+            <div className={styles.chartStatLabel}>Remaining</div>
+            <div className={styles.chartStatVal} style={{ color: "#4338ca" }}>{remaining}</div>
+          </div>
+
+          <div className={styles.chartDivider} />
+
+          {/* Progress bar */}
+          <div className={styles.chartBarSection}>
+            <div className={styles.chartBarLabel}>
+              <span>Sprint progress</span>
+              <span style={{ fontWeight: 700, color: "#111827" }}>{pct}%</span>
+            </div>
+            <div className={styles.chartBar}>
+              <div
+                className={styles.chartBarFill}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <div className={styles.chartBarSub}>
+              {completed} of {total} tasks done
+            </div>
+          </div>
         </div>
       </div>
-
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        width="100%"
-        preserveAspectRatio="xMidYMid meet"
-        className={styles.chartSvg}
-      >
-        <defs>
-          <linearGradient id="idealGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#facc15" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#facc15" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {/* Grid lines */}
-        {Array.from({ length: yTicks + 1 }).map((_, i) => {
-          const y = pad.top + (i / yTicks) * chartH;
-          const val = Math.round(maxVal - (i / yTicks) * maxVal);
-          return (
-            <g key={i}>
-              <line
-                x1={pad.left} y1={y} x2={pad.left + chartW} y2={y}
-                stroke="#e5e7eb" strokeWidth="1" strokeDasharray={i === yTicks ? "0" : "4 4"}
-              />
-              <text
-                x={pad.left - 8} y={y + 4}
-                textAnchor="end" fontSize="11" fill="#9ca3af" fontFamily="system-ui, sans-serif"
-              >
-                {val}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* X-axis labels */}
-        {points.map((d, i) => {
-          if (points.length > 12 && i % 2 !== 0) return null;
-          return (
-            <text
-              key={i}
-              x={toX(i)} y={pad.top + chartH + 18}
-              textAnchor="middle" fontSize="11" fill="#9ca3af" fontFamily="system-ui, sans-serif"
-            >
-              {d.label ?? `D${i + 1}`}
-            </text>
-          );
-        })}
-
-        {/* Ideal fill */}
-        <path d={idealFillPath} fill="url(#idealGrad)" />
-
-        {/* Actual fill */}
-        <path d={actualFillPath} fill="url(#actualGrad)" />
-
-        {/* Ideal line */}
-        <path
-          d={idealPath}
-          fill="none"
-          stroke="#facc15"
-          strokeWidth="2"
-          strokeDasharray="6 4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        {/* Actual line */}
-        <path
-          d={actualPath}
-          fill="none"
-          stroke="#3b82f6"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        {/* Actual dots */}
-        {points.map((d, i) => (
-          <circle
-            key={i}
-            cx={toX(i)} cy={toY(d.actual ?? 0)}
-            r="4"
-            fill="#fff"
-            stroke="#3b82f6"
-            strokeWidth="2.5"
-          />
-        ))}
-      </svg>
     </div>
   );
 }

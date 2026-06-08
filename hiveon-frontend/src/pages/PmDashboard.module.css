@@ -247,7 +247,7 @@
   100% { background-position: -200% 0; }
 }
 
-/* ========== BURNDOWN ========== */
+/* ========== SPRINT PROGRESS CHART ========== */
 .burndownPanel {
   grid-column: 1 / -1;
 }
@@ -255,43 +255,107 @@
 .chartWrap {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
-.chartLegend {
-  display: flex;
-  gap: 20px;
-  padding: 0 2px;
-}
-
-.legendItem {
+.chartInner {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 12px;
+  gap: 32px;
+}
+
+.donutWrap {
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.2));
+}
+
+.chartStats {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.chartStatRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.chartStatDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chartStatLabel {
+  flex: 1;
+  font-size: 13px;
+  color: var(--muted);
   font-weight: 500;
+}
+
+.chartStatVal {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+  min-width: 32px;
+  text-align: right;
+}
+
+.chartDivider {
+  height: 1px;
+  background: #f3f4f6;
+}
+
+.chartBarSection {
+  padding: 12px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chartBarLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
   color: var(--muted);
 }
 
-.legendLine {
-  display: inline-block;
-  width: 20px;
-  height: 2.5px;
+.chartBar {
+  height: 8px;
+  background: #f1f5f9;
   border-radius: 999px;
+  overflow: hidden;
 }
 
-.chartSvg {
-  display: block;
-  overflow: visible;
+.chartBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #facc15, #f59e0b);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.chartBarSub {
+  font-size: 11px;
+  color: #9ca3af;
 }
 
 .chartEmpty {
-  height: 200px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #9ca3af;
   font-size: 13px;
+}
+
+@media (max-width: 540px) {
+  .chartInner {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
 
 /* ========== ACTIVE SPRINT ========== */
