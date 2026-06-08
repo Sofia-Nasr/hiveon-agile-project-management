@@ -68,31 +68,9 @@ export default function SprintsPage() {
 
   async function persistMove(id, status, order = null) {
     try {
-      const item = tasks.find((t) => t.id === id);
-      if (!item) return;
-      const payload = { status };
+      const payload = { ticketId: id, status };
       if (typeof order === "number") payload.order = order;
-      if (item.type === "UserStory") {
-        try {
-          await api.patch(`/sprints/stories/${id}/status`, payload);
-        } catch (err) {
-          if (err?.response?.status === 404) {
-            await api.patch(`/userstories/${id}/status`, payload);
-          } else {
-            throw err;
-          }
-        }
-      } else {
-        try {
-          await api.patch(`/tickets/${id}/status`, payload);
-        } catch (err) {
-          if (err?.response?.status === 404) {
-            await api.patch(`/tasks/${id}/status`, payload);
-          } else {
-            throw err;
-          }
-        }
-      }
+      await api.patch("/board/move", payload);
       // Refresh tasks after move to sync with other users
       await fetchTasks();
     } catch (err) {
