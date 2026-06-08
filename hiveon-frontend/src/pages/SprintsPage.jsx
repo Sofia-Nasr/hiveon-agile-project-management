@@ -66,14 +66,32 @@ export default function SprintsPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
   );
 
-  async function persistMove(id, status) {
+  async function persistMove(id, status, order = null) {
     try {
       const item = tasks.find((t) => t.id === id);
       if (!item) return;
+      const payload = { status };
+      if (typeof order === "number") payload.order = order;
       if (item.type === "UserStory") {
-        await api.patch(`/sprints/stories/${id}/status`, { status });
+        try {
+          await api.patch(`/sprints/stories/${id}/status`, payload);
+        } catch (err) {
+          if (err?.response?.status === 404) {
+            await api.patch(`/userstories/${id}/status`, payload);
+          } else {
+            throw err;
+          }
+        }
       } else {
-        await api.patch(`/tickets/${id}/status`, { status });
+        try {
+          await api.patch(`/tickets/${id}/status`, payload);
+        } catch (err) {
+          if (err?.response?.status === 404) {
+            await api.patch(`/tasks/${id}/status`, payload);
+          } else {
+            throw err;
+          }
+        }
       }
       // Refresh tasks after move to sync with other users
       await fetchTasks();
@@ -368,10 +386,13 @@ export default function SprintsPage() {
           let toIndex = toList.findIndex((t) => t.id === over.id);
           if (toIndex < 0) toIndex = toList.length;
           if (fromCol === toCol) {
-            if (fromIndex !== toIndex) moveWithinColumn(toCol, fromIndex, toIndex);
+            if (fromIndex !== toIndex) {
+              moveWithinColumn(toCol, fromIndex, toIndex);
+              persistMove(active.id, toCol, toIndex);
+            }
           } else {
             moveAcrossColumns(active.id, toCol, toIndex);
-            persistMove(active.id, toCol);
+            persistMove(active.id, toCol, toIndex);
           }
         }}
       >
