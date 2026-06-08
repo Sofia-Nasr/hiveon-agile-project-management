@@ -75,6 +75,8 @@ export default function SprintsPage() {
       } else {
         await api.patch(`/tickets/${id}/status`, { status });
       }
+      // Refresh tasks after move to sync with other users
+      await fetchTasks();
     } catch (err) {
       console.error("Persist move failed", err);
     }
@@ -138,6 +140,15 @@ export default function SprintsPage() {
     fetchSprints();
     fetchTasks();
   }, [fetchSprints, fetchTasks]);
+
+  // Poll for updates every 8 seconds to sync changes across users
+  useEffect(() => {
+    if (!projectId) return;
+    const interval = setInterval(() => {
+      fetchTasks();
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [projectId, fetchTasks]);
 
   const currentSprint = sprints[sprintIndex];
 
