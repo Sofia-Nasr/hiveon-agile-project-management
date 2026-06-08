@@ -68,81 +68,73 @@ export default function SprintsPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
   );
 
- async function persistMove(id, status) {
-  try {
-    const item = tasks.find(t => t.id === id);
-    if (!item) return;
-
-    if (item.type === "UserStory") {
-      await api.patch(`/sprints/stories/${id}/status`, { status });
-    } else {
-      await api.patch(`/tickets/${id}/status`, { status });
+  async function persistMove(id, status) {
+    try {
+      const item = tasks.find((t) => t.id === id);
+      if (!item) return;
+      if (item.type === "UserStory") {
+        await api.patch(`/sprints/stories/${id}/status`, { status });
+      } else {
+        await api.patch(`/tickets/${id}/status`, { status });
+      }
+    } catch (err) {
+      console.error("Persist move failed", err);
     }
-  } catch (err) {
-    console.error("Persist move failed", err);
   }
-}
-
-
 
   // ================= FETCH =================
-const fetchSprints = useCallback(async () => {
-  if (!projectId) return;
-  try {
-    const res = await api.get(`/sprints?projectId=${projectId}`);
-    const list = res.data || [];
-    setSprints(list);
-    setSprintIndex((i) => (i >= list.length ? 0 : i));
-  } catch (err) {
-    console.error("Failed to load sprints", err);
-    setSprints([]);
-    setSprintIndex(0);
-  }
-}, [projectId]);
-
+  const fetchSprints = useCallback(async () => {
+    if (!projectId) return;
+    try {
+      const res = await api.get(`/sprints?projectId=${projectId}`);
+      const list = res.data || [];
+      setSprints(list);
+      setSprintIndex((i) => (i >= list.length ? 0 : i));
+    } catch (err) {
+      console.error("Failed to load sprints", err);
+      setSprints([]);
+      setSprintIndex(0);
+    }
+  }, [projectId]);
 
   const fetchTasks = useCallback(async () => {
-  if (!projectId) return;
-
-  try {
-    const [tasksRes, storiesRes] = await Promise.all([
-      api.get(`/tasks?projectId=${projectId}`),
-      api.get(`/userstories?projectId=${projectId}`)
-    ]);
-const normalizedStories = storiesRes.data.map(s => ({
-  id: s.id,
-  title: s.title,
-  description: s.description,
-  type: "UserStory",
-  ticketType: "UserStory",
-  status: s.status,
-  sprintId: s.sprintId,
-  sprintName: s.sprintName,
-  order: s.order ?? 0,
-  assigneeId: s.assigneeId,
-  assigneeName: s.assigneeName,
-  epicId: s.epicId,
-  epicName: s.epicName,
-  targetForSprint: s.targetForSprint,
-  acceptanceCriteria: s.acceptanceCriteria,
-  assigneeEmail: s.assigneeEmail, 
-  storyPoints: s.storyPoints,
-}));
-
-const normalizedTasks = (tasksRes.data || []).map(t => ({
-  ...t,
-   assigneeEmail: t.assigneeEmail,
-  ticketType: t.type,
-  type: t.type ?? "Bug",
-}));
-
-     setTasks([...normalizedStories, ...normalizedTasks]);
-  } catch (err) {
-    console.error("Failed to load tasks", err);
-    setTasks([]);
-  }
-}, [projectId]);
-
+    if (!projectId) return;
+    try {
+      const [tasksRes, storiesRes] = await Promise.all([
+        api.get(`/tasks?projectId=${projectId}`),
+        api.get(`/userstories?projectId=${projectId}`),
+      ]);
+      const normalizedStories = storiesRes.data.map((s) => ({
+        id: s.id,
+        title: s.title,
+        description: s.description,
+        type: "UserStory",
+        ticketType: "UserStory",
+        status: s.status,
+        sprintId: s.sprintId,
+        sprintName: s.sprintName,
+        order: s.order ?? 0,
+        assigneeId: s.assigneeId,
+        assigneeName: s.assigneeName,
+        epicId: s.epicId,
+        epicName: s.epicName,
+        targetForSprint: s.targetForSprint,
+        acceptanceCriteria: s.acceptanceCriteria,
+        assigneeEmail: s.assigneeEmail,
+        storyPoints: s.storyPoints,
+      }));
+      const normalizedTasks = (tasksRes.data || []).map((t) => ({
+        ...t,
+        assigneeEmail: t.assigneeEmail,
+        ticketType: t.type,
+        type: t.type ?? "Bug",
+      }));
+      setTasks([...normalizedStories, ...normalizedTasks]);
+    } catch (err) {
+      console.error("Failed to load tasks", err);
+      setTasks([]);
+    }
+  }, [projectId]);
 
   useEffect(() => {
     fetchSprints();
@@ -152,7 +144,6 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
   const currentSprint = sprints[sprintIndex];
 
   // ================= FILTER =================
-
   const sprintTasks = useMemo(() => {
     if (!currentSprint) return [];
     return tasks.filter(
@@ -163,7 +154,6 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
   }, [tasks, currentSprint, typeFilter]);
 
   // ================= GROUP =================
-
   const grouped = useMemo(() => {
     const map = new Map(STATUSES.map((s) => [s, []]));
     sprintTasks.forEach((t) => {
@@ -177,7 +167,6 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
   }, [sprintTasks]);
 
   // ================= HELPERS =================
-
   function getColumnOf(id) {
     for (const s of STATUSES) {
       if (grouped.get(s)?.some((t) => t.id === id)) return s;
@@ -190,7 +179,6 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
       const items = grouped.get(col) || [];
       const reordered = arrayMove(items, from, to);
       const ids = reordered.map((x) => x.id);
-
       return prev.map((t) =>
         t.status === col ? { ...t, order: ids.indexOf(t.id) } : t
       );
@@ -208,118 +196,139 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
     );
   }
 
- 
+  const doneCount = sprintTasks.filter((t) => t.status === "Done").length;
+  const progressPct =
+    sprintTasks.length === 0
+      ? 0
+      : Math.round((doneCount / sprintTasks.length) * 100);
 
   // ================= RENDER =================
-
   return (
     <div className={styles.page}>
+      {/* ===== PAGE HEADER ===== */}
+      <header className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.headerMeta}>Sprint Board</div>
+          <h1 className={styles.h1}>{projectName || "Select a project"}</h1>
+        </div>
+        <div className={styles.headerRight}>
+          <ProjectPicker value={projectId} onChange={setProjectId} />
+
+          {/* Type filter pills */}
+          <div className={styles.filterPills}>
+            {TYPES.map((t) => (
+              <button
+                key={t}
+                className={`${styles.pill} ${
+                  typeFilter === t ? styles.pillActive : ""
+                }`}
+                onClick={() => setTypeFilter(t)}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {isScrumMaster && (
+            <button
+              className={styles.primaryBtn}
+              onClick={() => setShowNewSprint(true)}
+            >
+              + New sprint
+            </button>
+          )}
+          {currentSprint && isScrumMaster && (
+            <button
+              className={styles.secondaryBtn}
+              onClick={() => setShowPlanning(true)}
+            >
+              + Add from backlog
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* ===== SPRINT BANNER ===== */}
       {currentSprint && (
-        <section className={styles.planning}>
-          <div className={styles.planningHeader}>
+        <section className={styles.banner}>
+          <div className={styles.bannerLeft}>
             <div className={styles.sprintNav}>
               <button
                 className={styles.navBtn}
                 disabled={sprintIndex === 0}
                 onClick={() => setSprintIndex((i) => i - 1)}
+                aria-label="Previous sprint"
               >
                 ‹
               </button>
-
-              <h2>{currentSprint.name}</h2>
-
+              <div>
+                <div className={styles.sprintLabel}>Current sprint</div>
+                <div className={styles.sprintName}>{currentSprint.name}</div>
+                <div className={styles.sprintDates}>
+                  {fmtDate(currentSprint.startDate)} –{" "}
+                  {fmtDate(currentSprint.endDate)}
+                </div>
+              </div>
               <button
                 className={styles.navBtn}
                 disabled={sprintIndex === sprints.length - 1}
                 onClick={() => setSprintIndex((i) => i + 1)}
+                aria-label="Next sprint"
               >
                 ›
               </button>
             </div>
-
-            <div className={styles.dates}>
-              {fmtDate(currentSprint.startDate)} –{" "}
-              {fmtDate(currentSprint.endDate)}
-            </div>
           </div>
 
-          <div className={styles.tiles}>
-            <Tile label="Total Tasks" value={sprintTasks.length} />
-            <Tile
-              label="Completed"
-              value={sprintTasks.filter((t) => t.status === "Done").length}
-              success
-            />
-            <Tile
-              label="In Progress"
-              value={sprintTasks.filter((t) => t.status === "In Progress").length}
-            />
-            <Tile
-              label="Remaining Days"
-              value={
-                currentSprint.endDate
-                  ? Math.max(
-                      0,
-                      Math.ceil(
-                        (new Date(currentSprint.endDate) - new Date()) /
-                          86400000
-                      )
-                    )
-                  : "—"
-              }
-            />
-          </div>
-
-          <div className={styles.progressWrap}>
-            <div className={styles.progressTrack}>
-              <div
-                className={styles.progressBar}
-                style={{
-                  width: `${
-                    sprintTasks.length === 0
-                      ? 0
-                      : Math.round(
-                          (sprintTasks.filter((t) => t.status === "Done")
-                            .length /
-                            sprintTasks.length) *
-                            100
-                        )
-                  }%`,
-                }}
+          <div className={styles.bannerRight}>
+            <div className={styles.tiles}>
+              <Tile label="Total" value={sprintTasks.length} icon="📋" />
+              <Tile
+                label="Done"
+                value={doneCount}
+                icon="✅"
+                variant="success"
               />
+              <Tile
+                label="In Progress"
+                value={
+                  sprintTasks.filter((t) => t.status === "In Progress").length
+                }
+                icon="⚡"
+                variant="active"
+              />
+              <Tile
+                label="Days Left"
+                value={
+                  currentSprint.endDate
+                    ? Math.max(
+                        0,
+                        Math.ceil(
+                          (new Date(currentSprint.endDate) - new Date()) /
+                            86400000
+                        )
+                      )
+                    : "—"
+                }
+                icon="🗓"
+              />
+            </div>
+
+            <div className={styles.progressSection}>
+              <div className={styles.progressHeader}>
+                <span className={styles.progressLabel}>Sprint progress</span>
+                <span className={styles.progressPct}>{progressPct}%</span>
+              </div>
+              <div className={styles.progressTrack}>
+                <div
+                  className={styles.progressBar}
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
             </div>
           </div>
         </section>
       )}
-
-      <header className={styles.header}>
-        <div>
-          <h1 className={styles.h1}>Sprint Planning · {projectName}</h1>
-          <p className={styles.sub}>Sprint board & execution</p>
-        </div>
-<div className={styles.headerRight}>
-  <div className={styles.toolbar}>
-    <ProjectPicker value={projectId} onChange={setProjectId} />
-
-    {isScrumMaster && (
-      <button
-        className={styles.primaryBtn}
-        onClick={() => setShowNewSprint(true)}
-      >
-        + Add Sprint
-      </button>
-    )}
-
-    {currentSprint && isScrumMaster && (
-      <button
-        className={styles.primaryBtn}
-        onClick={() => setShowPlanning(true)}
-      >
-        + Add from Backlog
-      </button>
-    )}
-  </div>
-</div>     </header>
 
       {showPlanning && currentSprint && (
         <SprintPlanningModal
@@ -334,6 +343,7 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
         />
       )}
 
+      {/* ===== KANBAN BOARD ===== */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -342,23 +352,17 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
         onDragEnd={({ active, over }) => {
           setActiveId(null);
           if (!over) return;
-
           const fromCol = getColumnOf(active.id);
           const toCol = STATUSES.includes(over.id)
             ? over.id
             : getColumnOf(over.id);
-
           const fromList = grouped.get(fromCol) || [];
           const toList = grouped.get(toCol) || [];
-
           const fromIndex = fromList.findIndex((t) => t.id === active.id);
           let toIndex = toList.findIndex((t) => t.id === over.id);
           if (toIndex < 0) toIndex = toList.length;
-
           if (fromCol === toCol) {
-            if (fromIndex !== toIndex) {
-              moveWithinColumn(toCol, fromIndex, toIndex);
-            }
+            if (fromIndex !== toIndex) moveWithinColumn(toCol, fromIndex, toIndex);
           } else {
             moveAcrossColumns(active.id, toCol, toIndex);
             persistMove(active.id, toCol);
@@ -404,7 +408,8 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
           onCreated={fetchSprints}
         />
       )}
-      {/* ===== Ticket Detail Overlay (Bottom Drawer) ===== */}
+
+      {/* ===== TASK DETAIL BOTTOM SHEET ===== */}
       {selectedTask && (
         <div
           className={backlogStyles.detailOverlay}
@@ -414,7 +419,6 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
             className={`${backlogStyles.detailCard} ${backlogStyles.bottomSheetCard}`}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* little handle like your screenshot */}
             <div className={backlogStyles.sheetHandleWrap}>
               <div className={backlogStyles.sheetHandle} />
             </div>
@@ -441,7 +445,6 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
                 </div>
                 <h2 className={backlogStyles.detailTitle}>{selectedTask.title}</h2>
               </div>
-
               <button
                 className={backlogStyles.detailClose}
                 onClick={() => setSelectedTask(null)}
@@ -450,44 +453,33 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
               </button>
             </div>
 
-            {/* scrollable content area */}
             <div className={backlogStyles.bottomSheetBody}>
               <div className={backlogStyles.detailBody}>
                 <div className={backlogStyles.detailSection}>
                   <h4 className={backlogStyles.detailSectionTitle}>Summary</h4>
-
                   <p className={backlogStyles.detailDescription}>
                     {selectedTask.description || (
                       <span className={backlogStyles.detailEmpty}>No description</span>
                     )}
                   </p>
-
                   <div className={backlogStyles.detailGrid}>
                     <DetailItem label="Type" value={selectedTask.ticketType} />
                     <DetailItem label="Priority" value={selectedTask.priority || "Medium"} />
                     <DetailItem label="Status" value={selectedTask.status || "To Do"} />
-                    <DetailItem
-                      label="Assignee"
-                      value={selectedTask.assigneeName || "Unassigned"}
-                    />
+                    <DetailItem label="Assignee" value={selectedTask.assigneeName || "Unassigned"} />
                   </div>
                 </div>
 
                 {selectedTask.ticketType === "UserStory" && (
                   <div className={backlogStyles.detailSection}>
-                    <h4 className={backlogStyles.detailSectionTitle}>User Story Details</h4>
-
+                    <h4 className={backlogStyles.detailSectionTitle}>User story details</h4>
                     <div className={backlogStyles.detailGrid}>
                       <DetailItem label="Story Points" value={selectedTask.storyPoints ?? "—"} />
                       <DetailItem label="Epic" value={selectedTask.epicName || "—"} />
-                      <DetailItem
-                        label="Target for Sprint"
-                        value={selectedTask.targetForSprint || "—"}
-                      />
+                      <DetailItem label="Target for Sprint" value={selectedTask.targetForSprint || "—"} />
                     </div>
-
                     <div className={backlogStyles.detailSpan2}>
-                      <div className={backlogStyles.detailLabel}>Acceptance Criteria</div>
+                      <div className={backlogStyles.detailLabel}>Acceptance criteria</div>
                       <div>{selectedTask.acceptanceCriteria || "—"}</div>
                     </div>
                   </div>
@@ -495,27 +487,16 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
 
                 {selectedTask.ticketType === "Bug" && (
                   <div className={backlogStyles.detailSection}>
-                    <h4 className={backlogStyles.detailSectionTitle}>Bug Details</h4>
-
+                    <h4 className={backlogStyles.detailSectionTitle}>Bug details</h4>
                     <div className={backlogStyles.detailGrid}>
                       <DetailItem label="Severity" value={selectedTask.severity || "—"} />
                       <DetailItem label="Probability" value={selectedTask.probability || "—"} />
                       <DetailItem label="Environment" value={selectedTask.environment || "—"} />
-                      <DetailItem
-                        label="Build Caused Crash"
-                        value={selectedTask.buildCrash ? "Yes" : "No"}
-                      />
-                      <DetailItem
-                        label="Production Impacted"
-                        value={selectedTask.productionImpacted ? "Yes" : "No"}
-                      />
+                      <DetailItem label="Build Caused Crash" value={selectedTask.buildCrash ? "Yes" : "No"} />
+                      <DetailItem label="Production Impacted" value={selectedTask.productionImpacted ? "Yes" : "No"} />
                       <DetailItem
                         label="Trending End Date"
-                        value={
-                          selectedTask.trendingEndDate
-                            ? new Date(selectedTask.trendingEndDate).toLocaleDateString()
-                            : "—"
-                        }
+                        value={selectedTask.trendingEndDate ? new Date(selectedTask.trendingEndDate).toLocaleDateString() : "—"}
                       />
                     </div>
                   </div>
@@ -523,33 +504,12 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
 
                 {selectedTask.ticketType === "Epic" && (
                   <div className={backlogStyles.detailSection}>
-                    <h4 className={backlogStyles.detailSectionTitle}>Epic Planning</h4>
-
+                    <h4 className={backlogStyles.detailSectionTitle}>Epic planning</h4>
                     <div className={backlogStyles.detailGrid}>
-                      <DetailItem
-                        label="Effort Estimate"
-                        value={selectedTask.effortEstimate ?? "—"}
-                      />
-                      <DetailItem
-                        label="Revenue Impact"
-                        value={selectedTask.revenueImpact ?? "—"}
-                      />
-                      <DetailItem
-                        label="Start Date"
-                        value={
-                          selectedTask.startDate
-                            ? new Date(selectedTask.startDate).toLocaleDateString()
-                            : "—"
-                        }
-                      />
-                      <DetailItem
-                        label="End Date"
-                        value={
-                          selectedTask.endDate
-                            ? new Date(selectedTask.endDate).toLocaleDateString()
-                            : "—"
-                        }
-                      />
+                      <DetailItem label="Effort Estimate" value={selectedTask.effortEstimate ?? "—"} />
+                      <DetailItem label="Revenue Impact" value={selectedTask.revenueImpact ?? "—"} />
+                      <DetailItem label="Start Date" value={selectedTask.startDate ? new Date(selectedTask.startDate).toLocaleDateString() : "—"} />
+                      <DetailItem label="End Date" value={selectedTask.endDate ? new Date(selectedTask.endDate).toLocaleDateString() : "—"} />
                     </div>
                   </div>
                 )}
@@ -557,134 +517,151 @@ const normalizedTasks = (tasksRes.data || []).map(t => ({
                 {selectedTask.ticketType === "Support" && (
                   <div className={backlogStyles.detailSection}>
                     <h4 className={backlogStyles.detailSectionTitle}>Planning</h4>
-
                     <div className={backlogStyles.detailGrid}>
-                      <DetailItem
-                        label="Planned Start"
-                        value={
-                          selectedTask.plannedStart
-                            ? new Date(selectedTask.plannedStart).toLocaleDateString()
-                            : "—"
-                        }
-                      />
-                      <DetailItem
-                        label="Planned End"
-                        value={
-                          selectedTask.plannedEnd
-                            ? new Date(selectedTask.plannedEnd).toLocaleDateString()
-                            : "—"
-                        }
-                      />
+                      <DetailItem label="Planned Start" value={selectedTask.plannedStart ? new Date(selectedTask.plannedStart).toLocaleDateString() : "—"} />
+                      <DetailItem label="Planned End" value={selectedTask.plannedEnd ? new Date(selectedTask.plannedEnd).toLocaleDateString() : "—"} />
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* pinned comments drawer at the bottom of the sheet */}
             <div className={backlogStyles.bottomSheetComments}>
-  <CommentsSection
-  entityId={selectedTask.id}
-  entityType={
-    selectedTask.ticketType === "UserStory"
-      ? "UserStory"
-      : selectedTask.ticketType === "Epic"
-      ? "Epic"
-      : "TaskItem"
-  }
-  assigneeName={selectedTask.assigneeName || ""}
-  assigneeEmail={selectedTask.assigneeEmail || ""}
-/>
+              <CommentsSection
+                entityId={selectedTask.id}
+                entityType={
+                  selectedTask.ticketType === "UserStory"
+                    ? "UserStory"
+                    : selectedTask.ticketType === "Epic"
+                    ? "Epic"
+                    : "TaskItem"
+                }
+                assigneeName={selectedTask.assigneeName || ""}
+                assigneeEmail={selectedTask.assigneeEmail || ""}
+              />
             </div>
           </div>
         </div>
       )}
-</div>
+    </div>
   );
 }
+
+// ================= STATUS CONFIG =================
+const STATUS_CONFIG = {
+  "To Do":      { dot: "#94a3b8", bg: "#f8fafc", accent: "#e2e8f0" },
+  "In Progress": { dot: "#3b82f6", bg: "#eff6ff", accent: "#bfdbfe" },
+  "Testing":    { dot: "#a855f7", bg: "#faf5ff", accent: "#e9d5ff" },
+  "In Review":  { dot: "#f59e0b", bg: "#fffbeb", accent: "#fde68a" },
+  "Done":       { dot: "#22c55e", bg: "#f0fdf4", accent: "#bbf7d0" },
+  "Blocked":    { dot: "#ef4444", bg: "#fef2f2", accent: "#fecaca" },
+};
+
+const TYPE_CONFIG = {
+  UserStory: { label: "Story",   bg: "#eff6ff", color: "#1d4ed8" },
+  Bug:       { label: "Bug",     bg: "#fef2f2", color: "#b91c1c" },
+  Support:   { label: "Support", bg: "#f0fdf4", color: "#15803d" },
+  default:   { label: "Task",    bg: "#f5f3ff", color: "#6d28d9" },
+};
+
 // ================= COMPONENTS =================
 
 function SprintColumn({ id, title, items, children }) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const cfg = STATUS_CONFIG[title] || STATUS_CONFIG["To Do"];
 
   return (
     <div className={styles.column}>
-      <div className={styles.columnHead}>
-        <span>{title}</span>
+      <div className={styles.columnHead} style={{ borderTopColor: cfg.dot }}>
+        <div className={styles.columnHeadLeft}>
+          <span className={styles.columnDot} style={{ background: cfg.dot }} />
+          <span className={styles.columnTitle}>{title}</span>
+        </div>
         <span className={styles.columnCount}>{items.length}</span>
       </div>
       <div
         ref={setNodeRef}
-        className={`${styles.columnBody} ${
-          isOver ? styles.columnBodyOver : ""
-        }`}
+        className={`${styles.columnBody} ${isOver ? styles.columnBodyOver : ""}`}
+        style={isOver ? { background: cfg.bg } : {}}
       >
         {children}
-      </div>
-    </div>
-  );
-}
-function SortableSprintCard({ task, onSelect }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: task.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div
-        className={styles.card}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(task);
-        }}
-      >
-        {/* Title */}
-        <div className={styles.cardTitle}>{task.title}</div>
-
-        {/* Meta row */}
-        <div className={styles.cardMetaRow}>
-          <span className={styles.cardType}>{task.type}</span>
-
-          {/* Assignee */}
-          <span className={styles.cardAssignee}>
-            👤 {task.assigneeName || "Unassigned"}
-          </span>
-        </div>
-
-        {/* User Story extra info */}
-        {task.type === "UserStory" && task.targetForSprint && (
-          <div className={styles.cardTarget}>
-            🎯 {task.targetForSprint}
-          </div>
+        {items.length === 0 && (
+          <div className={styles.emptyCol}>Drop here</div>
         )}
       </div>
     </div>
   );
 }
 
+function SortableSprintCard({ task, onSelect }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: task.id });
 
-function fmtDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString();
-}
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
 
-function Tile({ label, value, success }) {
+  const typeCfg = TYPE_CONFIG[task.type] || TYPE_CONFIG.default;
+  const initials = task.assigneeName
+    ? task.assigneeName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
+
   return (
-    <div className={styles.tile}>
-      <div className={styles.tileLabel}>{label}</div>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <div
-        className={styles.tileValue}
-        style={success ? { color: "var(--success)" } : {}}
+        className={styles.card}
+        onClick={(e) => { e.stopPropagation(); onSelect(task); }}
       >
-        {value}
+        <div className={styles.cardTop}>
+          <span
+            className={styles.cardTypeBadge}
+            style={{ background: typeCfg.bg, color: typeCfg.color }}
+          >
+            {typeCfg.label}
+          </span>
+          {task.storyPoints != null && (
+            <span className={styles.storyPoints}>{task.storyPoints} pts</span>
+          )}
+        </div>
+
+        <div className={styles.cardTitle}>{task.title}</div>
+
+        {task.type === "UserStory" && task.targetForSprint && (
+          <div className={styles.cardTarget}>{task.targetForSprint}</div>
+        )}
+
+        <div className={styles.cardFooter}>
+          <div className={styles.cardAvatar}>{initials}</div>
+          <span className={styles.cardAssigneeName}>
+            {task.assigneeName || "Unassigned"}
+          </span>
+        </div>
       </div>
     </div>
   );
 }
+
+function fmtDate(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function Tile({ label, value, icon, variant }) {
+  return (
+    <div className={`${styles.tile} ${variant ? styles[`tile_${variant}`] : ""}`}>
+      <div className={styles.tileIcon}>{icon}</div>
+      <div className={styles.tileValue}>{value}</div>
+      <div className={styles.tileLabel}>{label}</div>
+    </div>
+  );
+}
+
 function DetailItem({ label, value }) {
   return (
     <div>
