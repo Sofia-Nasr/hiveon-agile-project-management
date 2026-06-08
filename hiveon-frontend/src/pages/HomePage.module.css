@@ -28,7 +28,9 @@
   position: fixed; 
   top: 0; 
   left: 0; 
-  padding: 1.5rem 2rem; 
+  height: 72px;
+  padding: 0 2rem;
+  width: 100%;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -36,7 +38,6 @@
   z-index: 1000; 
   display: flex; 
   justify-content: flex-start; 
-  width: 100%; 
   max-width: 100%;
   box-sizing: border-box; 
   align-items: center; 
@@ -68,11 +69,11 @@
 /* Auth Buttons with Hover Effects */
 .authButtonsContainer { 
   position: fixed; 
-  top: 20px; 
+  top: 16px; 
   right: 20px; 
   display: flex; 
-  gap: 15px; 
-  z-index: 1001;
+  gap: 10px; 
+  z-index: 1002;
   animation: slideInRight 0.6s ease-out;
 }
 
@@ -154,60 +155,14 @@
     padding: 1rem 1.25rem;
   }
   .authButtonsContainer {
-    flex-direction: column;
-    gap: 8px;
     top: 12px;
     right: 12px;
-    bottom: auto;
-    left: auto;
-    position: absolute;
-    transform: none;
-    width: auto;
-    z-index: 100;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: flex-end;
+    gap: 8px;
   }
   .authButton {
     padding: 8px 14px;
     font-size: 13px;
     border-radius: 6px;
-    min-width: 100px;
-  }
-}
-
-@media (max-width: 640px) {
-  .header {
-    padding: 0.75rem 1rem;
-    gap: 8px;
-  }
-  .hexagonSmall {
-    width: 32px;
-    height: 32px;
-  }
-  .header h2 {
-    font-size: 1rem;
-  }
-  .authButtonsContainer {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    bottom: auto;
-    left: auto;
-    flex-direction: column;
-    align-items: flex-end;
-    transform: none;
-    gap: 6px;
-    display: flex;
-    width: auto;
-    margin-bottom: 0;
-    z-index: 100;
-  }
-  .authButton {
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 5px;
-    min-width: 90px;
   }
 }
 
@@ -699,56 +654,83 @@
 }
 
 @media (max-width: 640px) {
-  .title {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
+  .header {
+    height: 64px;
+    padding: 0 1rem;
   }
-  .subtitle {
-    font-size: 0.9rem;
-    margin: 0 auto 1rem;
-    line-height: 1.5;
-    padding: 0 0.5rem;
+
+  .header h2 {
+    font-size: 1rem;
   }
-  .rotatingHex {
-    width: 50px;
-    height: 50px;
-    margin: 0 auto 15px;
+
+  .hexagonSmall {
+    width: 34px;
+    height: 34px;
   }
-  .featuresGrid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+
+  .authButtonsContainer {
+    top: 14px;
+    right: 10px;
+    flex-direction: row;
+    gap: 6px;
   }
-  .featureCard {
+
+  .authButton {
+    min-width: auto;
+    padding: 7px 10px;
+    font-size: 11px;
+    border-radius: 8px;
+  }
+
+  .mainContent {
+    margin-top: 64px;
     padding: 0.75rem;
   }
-  .buttonContainer {
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0 0.5rem;
+
+  .heroSection {
+    padding: 3rem 1rem 4rem;
+    clip-path: none;
+    border-radius: 0 0 28px 28px;
   }
+
+  .title {
+    font-size: 1.9rem;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    padding: 0;
+  }
+
+  .buttonContainer {
+    width: 100%;
+    padding: 0;
+  }
+
   .primaryBtn,
   .secondaryBtn {
     width: 100%;
-    padding: 10px 16px;
-    font-size: 13px;
-    border-radius: 8px;
+    max-width: 320px;
   }
-  .heroSection {
-    padding: 2.5rem 1rem 3.5rem;
-    margin-bottom: 1.5rem;
+
+  .featuresSection {
+    padding: 3rem 0.75rem;
   }
-  .header {
-    padding: 0.7rem 0.85rem;
-    gap: 6px;
+
+  .sectionTitle {
+    font-size: 2.1rem;
+    margin-bottom: 2rem;
   }
-  .mainContent {
-    padding: 0.75rem;
-    margin-top: 58px;
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
   }
-  .divider {
-    width: 50px;
-    height: 2px;
+
+  .featureCard {
+    padding: 1.5rem;
+    border-radius: 18px;
   }
 }
 /* Footer Section - App-style footer instead of free trial CTA */
