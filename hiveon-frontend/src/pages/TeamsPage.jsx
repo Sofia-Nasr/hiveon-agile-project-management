@@ -47,8 +47,21 @@ function TeamCard({
   const leadMember =
     (team.members || []).find((m) => m.id === team.teamLeadId) || null;
 
+  const initials = (name) =>
+    name
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()
+      : "?";
+
   return (
-    <div className={styles.teamCard}>
+    <div className={`${styles.teamCard} ${isEditing ? styles.teamCardEditing : ""}`}>
+      {/* Card top accent strip */}
+      <div className={styles.teamCardAccent} />
+
       <div className={styles.teamHeader}>
         {isEditing ? (
           <>
@@ -57,6 +70,7 @@ function TeamCard({
                 className={styles.teamNameInput}
                 value={editName ?? ""}
                 onChange={(e) => onEditNameChange(e.target.value)}
+                placeholder="Team name…"
               />
               <div className={styles.teamLeadEditRow}>
                 <span className={styles.teamLeadLabel}>Team lead</span>
@@ -75,18 +89,10 @@ function TeamCard({
               </div>
             </div>
             <div className={styles.teamHeaderButtons}>
-              <button
-                className={styles.smallBtn}
-                type="button"
-                onClick={onSave}
-              >
+              <button className={styles.saveBtn} type="button" onClick={onSave}>
                 Save
               </button>
-              <button
-                className={styles.smallBtn}
-                type="button"
-                onClick={onCancelEdit}
-              >
+              <button className={styles.cancelBtn} type="button" onClick={onCancelEdit}>
                 Cancel
               </button>
             </div>
@@ -94,29 +100,32 @@ function TeamCard({
         ) : (
           <>
             <div className={styles.teamHeaderLeft}>
-              <div className={styles.teamNameDisplay}>{team.name}</div>
+              <div className={styles.teamNameRow}>
+                <div className={styles.teamAvatar}>{initials(team.name)}</div>
+                <div>
+                  <div className={styles.teamNameDisplay}>{team.name}</div>
+                  <div className={styles.teamId}>{team.id}</div>
+                </div>
+              </div>
               <div className={styles.teamLeadDisplayRow}>
-                <span className={styles.teamLeadLabel}>Lead:</span>
-                <span className={styles.teamLeadValue}>
-                  {leadMember
-                    ? `${leadMember.name} (${leadMember.email})`
-                    : "None"}
+                <span className={styles.teamLeadPill}>
+                  {leadMember ? (
+                    <>
+                      <span className={styles.leadDot} />
+                      {leadMember.name}
+                      <span className={styles.memberEmail}>{leadMember.email}</span>
+                    </>
+                  ) : (
+                    <span className={styles.noLead}>No lead assigned</span>
+                  )}
                 </span>
               </div>
             </div>
             <div className={styles.teamHeaderButtons}>
-              <button
-                className={styles.smallBtn}
-                type="button"
-                onClick={onEnterEdit}
-              >
+              <button className={styles.editBtn} type="button" onClick={onEnterEdit}>
                 Edit
               </button>
-              <button
-                className={styles.smallDangerBtn}
-                type="button"
-                onClick={onDelete}
-              >
+              <button className={styles.deleteBtn} type="button" onClick={onDelete}>
                 Delete
               </button>
             </div>
@@ -124,24 +133,29 @@ function TeamCard({
         )}
       </div>
 
-      <div className={styles.teamId}>{team.id}</div>
+      <div className={styles.divider} />
 
       <div className={styles.membersSection}>
-        <div className={styles.membersHeader}>Members</div>
+        <div className={styles.membersHeader}>
+          <span>Members</span>
+          <span className={styles.memberCount}>{(team.members || []).length}</span>
+        </div>
         {team.members && team.members.length > 0 ? (
           <ul className={styles.membersList}>
             {team.members.map((m) => (
               <li key={m.id} className={styles.memberItem}>
-                <span>
-                  {m.name}{" "}
-                  <span className={styles.memberEmail}>({m.email})</span>
+                <div className={styles.memberAvatarSmall}>{initials(m.name)}</div>
+                <span className={styles.memberInfo}>
+                  {m.name}
+                  <span className={styles.memberEmail}>{m.email}</span>
                 </span>
                 <button
                   className={styles.removeMemberBtn}
                   type="button"
                   onClick={() => onRemoveMember(m.id)}
+                  title="Remove member"
                 >
-                  Remove
+                  ✕
                 </button>
               </li>
             ))}
@@ -152,22 +166,21 @@ function TeamCard({
       </div>
 
       <div className={styles.addMemberSection}>
-        <label className={styles.label}>
-          Add member (search by name or email)
-        </label>
-        <input
-          className={styles.input}
-          placeholder="Start typing a name or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <label className={styles.label}>Add member</label>
+        <div className={styles.searchWrap}>
+          <span className={styles.searchIcon}>⌕</span>
+          <input
+            className={styles.searchInput}
+            placeholder="Search by name or email…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         {search && (
           <div className={styles.searchDropdown}>
-            {searching && (
-              <div className={styles.searchHint}>Searching...</div>
-            )}
+            {searching && <div className={styles.searchHint}>Searching…</div>}
             {!searching && results.length === 0 && (
-              <div className={styles.searchHint}>No matches.</div>
+              <div className={styles.searchHint}>No matches found.</div>
             )}
             {!searching &&
               results.map((u) => (
@@ -181,8 +194,11 @@ function TeamCard({
                     setResults([]);
                   }}
                 >
-                  {u.name}{" "}
-                  <span className={styles.memberEmail}>({u.email})</span>
+                  <div className={styles.memberAvatarSmall}>{initials(u.name)}</div>
+                  <span>
+                    {u.name}
+                    <span className={styles.memberEmail}>{u.email}</span>
+                  </span>
                 </button>
               ))}
           </div>
@@ -420,149 +436,168 @@ export default function TeamsPage() {
     }
   }
 
+  const initials = (name) =>
+    name
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()
+      : "?";
+
   return (
     <div className={styles.page}>
+      {/* ── Page header ── */}
       <header className={styles.header}>
-        <div>
+        <div className={styles.headerText}>
           <h1 className={styles.title}>Teams</h1>
           <p className={styles.subtitle}>
-            Create and manage teams per project. Boards and tickets use these
-            teams.
+            Create and manage teams per project. Boards and tickets use these teams.
           </p>
         </div>
       </header>
 
-      {/* Project picker at the top + pretty create-team card */}
-      <section className={styles.toolbar}>
-        <div className={styles.toolbarRow}>
-          <div className={styles.projectPicker}>
-            <label className={styles.label}>Project</label>
+      {/* ── Two-column layout: sidebar form + main list ── */}
+      <div className={styles.layout}>
+
+        {/* ─── LEFT: project picker + create team form ─── */}
+        <aside className={styles.sidebar}>
+
+          {/* Project picker */}
+          <div className={styles.sidebarBlock}>
+            <label className={styles.sidebarLabel}>Project</label>
             <ProjectPicker
               value={projectId}
               onChange={setProjectId}
               showNewLink={false}
             />
           </div>
-        </div>
 
-        <div className={styles.newTeamCard}>
-          <div className={styles.newTeamHeaderRow}>
-            <h2 className={styles.newTeamTitle}>Create a new team</h2>
-            <span className={styles.newTeamHint}>
-              Fill in the details below, then create the team.
-            </span>
-          </div>
+          {/* Create team form */}
+          <div className={styles.createCard}>
+            <div className={styles.createCardHeader}>
+              <span className={styles.createCardIcon}>＋</span>
+              <div>
+                <div className={styles.createCardTitle}>New Team</div>
+                <div className={styles.createCardHint}>Fill in details below</div>
+              </div>
+            </div>
 
-          <div className={styles.fieldGroup}>
-            <label className={styles.label}>Team name</label>
-            <input
-              className={styles.input}
-              placeholder="Team name e.g. Backend Squad"
-              value={newTeamName}
-              onChange={(e) => setNewTeamName(e.target.value)}
-            />
-          </div>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Team name</label>
+              <input
+                className={styles.input}
+                placeholder="e.g. Backend Squad"
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.fieldGroup}>
-            <label className={styles.label}>Team lead name</label>
-            <input
-              className={styles.input}
-              placeholder="Type a name or email..."
-              value={leadSearch}
-              onChange={(e) => setLeadSearch(e.target.value)}
-            />
-            {leadSearch && (
-              <div className={styles.searchDropdown}>
-                {leadSearching && (
-                  <div className={styles.searchHint}>Searching...</div>
-                )}
-                {!leadSearching && leadResults.length === 0 && (
-                  <div className={styles.searchHint}>No matches.</div>
-                )}
-                {!leadSearching &&
-                  leadResults.map((u) => (
-                    <button
-                      key={u.id}
-                      type="button"
-                      className={styles.searchResultItem}
-                      onClick={() => selectLead(u)}
-                    >
-                      {u.name}{" "}
-                      <span className={styles.memberEmail}>({u.email})</span>
-                    </button>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Team lead</label>
+              <div className={styles.searchWrap}>
+                <span className={styles.searchIcon}>⌕</span>
+                <input
+                  className={styles.searchInput}
+                  placeholder="Search name or email…"
+                  value={leadSearch}
+                  onChange={(e) => setLeadSearch(e.target.value)}
+                />
+              </div>
+              {leadSearch && (
+                <div className={styles.searchDropdown}>
+                  {leadSearching && <div className={styles.searchHint}>Searching…</div>}
+                  {!leadSearching && leadResults.length === 0 && (
+                    <div className={styles.searchHint}>No matches found.</div>
+                  )}
+                  {!leadSearching &&
+                    leadResults.map((u) => (
+                      <button
+                        key={u.id}
+                        type="button"
+                        className={styles.searchResultItem}
+                        onClick={() => selectLead(u)}
+                      >
+                        <div className={styles.memberAvatarSmall}>{initials(u.name)}</div>
+                        <span>
+                          {u.name}
+                          <span className={styles.memberEmail}>{u.email}</span>
+                        </span>
+                      </button>
+                    ))}
+                </div>
+              )}
+              {newTeamLead && (
+                <div className={styles.selectedLeadRow}>
+                  <div className={styles.memberAvatarSmall}>{initials(newTeamLead.name)}</div>
+                  <span className={styles.selectedLeadName}>
+                    {newTeamLead.name}
+                    <span className={styles.memberEmail}>{newTeamLead.email}</span>
+                  </span>
+                  <button type="button" className={styles.clearLeadBtn} onClick={clearLead}>
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>Members</label>
+              <div className={styles.searchWrap}>
+                <span className={styles.searchIcon}>⌕</span>
+                <input
+                  className={styles.searchInput}
+                  placeholder="Search name or email…"
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                />
+              </div>
+              {memberSearch && (
+                <div className={styles.searchDropdown}>
+                  {memberSearching && <div className={styles.searchHint}>Searching…</div>}
+                  {!memberSearching && memberResults.length === 0 && (
+                    <div className={styles.searchHint}>No matches found.</div>
+                  )}
+                  {!memberSearching &&
+                    memberResults.map((u) => (
+                      <button
+                        key={u.id}
+                        type="button"
+                        className={styles.searchResultItem}
+                        onClick={() => addMemberToNewTeam(u)}
+                      >
+                        <div className={styles.memberAvatarSmall}>{initials(u.name)}</div>
+                        <span>
+                          {u.name}
+                          <span className={styles.memberEmail}>{u.email}</span>
+                        </span>
+                      </button>
+                    ))}
+                </div>
+              )}
+              {newTeamMembers.length > 0 && (
+                <ul className={styles.membersList}>
+                  {newTeamMembers.map((m) => (
+                    <li key={m.id} className={styles.memberItem}>
+                      <div className={styles.memberAvatarSmall}>{initials(m.name)}</div>
+                      <span className={styles.memberInfo}>
+                        {m.name}
+                        <span className={styles.memberEmail}>{m.email}</span>
+                      </span>
+                      <button
+                        className={styles.removeMemberBtn}
+                        type="button"
+                        onClick={() => removeMemberFromNewTeam(m.id)}
+                      >
+                        ✕
+                      </button>
+                    </li>
                   ))}
-              </div>
-            )}
+                </ul>
+              )}
+            </div>
 
-            {newTeamLead && (
-              <div className={styles.selectedLeadRow}>
-                <span className={styles.selectedLeadName}>
-                  Lead: {newTeamLead.name} ({newTeamLead.email})
-                </span>
-                <button
-                  type="button"
-                  className={styles.clearLeadBtn}
-                  onClick={clearLead}
-                >
-                  Clear
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label className={styles.label}>Team members</label>
-            <input
-              className={styles.input}
-              placeholder="Type a name or email to add..."
-              value={memberSearch}
-              onChange={(e) => setMemberSearch(e.target.value)}
-            />
-            {memberSearch && (
-              <div className={styles.searchDropdown}>
-                {memberSearching && (
-                  <div className={styles.searchHint}>Searching...</div>
-                )}
-                {!memberSearching && memberResults.length === 0 && (
-                  <div className={styles.searchHint}>No matches.</div>
-                )}
-                {!memberSearching &&
-                  memberResults.map((u) => (
-                    <button
-                      key={u.id}
-                      type="button"
-                      className={styles.searchResultItem}
-                      onClick={() => addMemberToNewTeam(u)}
-                    >
-                      {u.name}{" "}
-                      <span className={styles.memberEmail}>({u.email})</span>
-                    </button>
-                  ))}
-              </div>
-            )}
-
-            {newTeamMembers.length > 0 && (
-              <ul className={styles.membersList}>
-                {newTeamMembers.map((m) => (
-                  <li key={m.id} className={styles.memberItem}>
-                    <span>
-                      {m.name}{" "}
-                      <span className={styles.memberEmail}>({m.email})</span>
-                    </span>
-                    <button
-                      className={styles.removeMemberBtn}
-                      type="button"
-                      onClick={() => removeMemberFromNewTeam(m.id)}
-                    >
-                      ✕
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div className={styles.newTeamActions}>
             <button
               className={styles.primaryBtn}
               onClick={createTeam}
@@ -571,60 +606,78 @@ export default function TeamsPage() {
               Create team
             </button>
           </div>
-        </div>
-      </section>
+        </aside>
 
-      {loading && <p>Loading teams...</p>}
-
-      {!loading && projectId && (
-        <section className={styles.teamsList}>
-          {teams.length === 0 && (
-            <p className={styles.empty}>No teams yet for this project.</p>
+        {/* ─── RIGHT: teams list ─── */}
+        <main className={styles.main}>
+          {!projectId && (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>◎</div>
+              <p className={styles.emptyTitle}>No project selected</p>
+              <p className={styles.emptyBody}>
+                Pick a project on the left to see and manage its teams.
+              </p>
+            </div>
           )}
 
-          {teams.map((team) => (
-            <TeamCard
-              key={team.id}
-              team={team}
-              isEditing={editingTeamId === team.id}
-              editName={editNames[team.id]}
-              onEditNameChange={(name) =>
-                setEditNames((prev) => ({ ...prev, [team.id]: name }))
-              }
-              leadEdit={leadEdits[team.id]}
-              onLeadChange={(val) =>
-                setLeadEdits((prev) => ({ ...prev, [team.id]: val }))
-              }
-              onEnterEdit={() => {
-                setEditNames((prev) => ({ ...prev, [team.id]: team.name }));
-                setLeadEdits((prev) => ({
-                  ...prev,
-                  [team.id]: team.teamLeadId || "",
-                }));
-                setEditingTeamId(team.id);
-              }}
-              onCancelEdit={() => {
-                setEditNames((prev) => ({ ...prev, [team.id]: team.name }));
-                setLeadEdits((prev) => ({
-                  ...prev,
-                  [team.id]: team.teamLeadId || "",
-                }));
-                setEditingTeamId(null);
-              }}
-              onSave={() => saveTeam(team.id)}
-              onDelete={() => deleteTeam(team.id)}
-              onRemoveMember={(userId) => removeMember(team.id, userId)}
-              onAddMember={(user) => addMember(team.id, user)}
-            />
-          ))}
-        </section>
-      )}
+          {projectId && loading && (
+            <div className={styles.loadingWrap}>
+              <div className={styles.spinner} />
+              <span>Loading teams…</span>
+            </div>
+          )}
 
-      {!projectId && (
-        <p className={styles.empty}>
-          Select or create a project first to manage its teams.
-        </p>
-      )}
+          {projectId && !loading && teams.length === 0 && (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>◈</div>
+              <p className={styles.emptyTitle}>No teams yet</p>
+              <p className={styles.emptyBody}>
+                Create your first team using the form on the left.
+              </p>
+            </div>
+          )}
+
+          {!loading && (
+            <div className={styles.teamsList}>
+              {teams.map((team) => (
+                <TeamCard
+                  key={team.id}
+                  team={team}
+                  isEditing={editingTeamId === team.id}
+                  editName={editNames[team.id]}
+                  onEditNameChange={(name) =>
+                    setEditNames((prev) => ({ ...prev, [team.id]: name }))
+                  }
+                  leadEdit={leadEdits[team.id]}
+                  onLeadChange={(val) =>
+                    setLeadEdits((prev) => ({ ...prev, [team.id]: val }))
+                  }
+                  onEnterEdit={() => {
+                    setEditNames((prev) => ({ ...prev, [team.id]: team.name }));
+                    setLeadEdits((prev) => ({
+                      ...prev,
+                      [team.id]: team.teamLeadId || "",
+                    }));
+                    setEditingTeamId(team.id);
+                  }}
+                  onCancelEdit={() => {
+                    setEditNames((prev) => ({ ...prev, [team.id]: team.name }));
+                    setLeadEdits((prev) => ({
+                      ...prev,
+                      [team.id]: team.teamLeadId || "",
+                    }));
+                    setEditingTeamId(null);
+                  }}
+                  onSave={() => saveTeam(team.id)}
+                  onDelete={() => deleteTeam(team.id)}
+                  onRemoveMember={(userId) => removeMember(team.id, userId)}
+                  onAddMember={(user) => addMember(team.id, user)}
+                />
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
