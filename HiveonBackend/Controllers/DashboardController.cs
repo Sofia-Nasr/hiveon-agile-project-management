@@ -29,6 +29,7 @@ namespace HiveonBackend.Controllers
             return wsId;
         }
         [HttpGet("pm")]
+        [HttpGet("/api/pm/dashboard")]
         public async Task<IActionResult> GetPmDashboard([FromQuery] Guid projectId) 
         {
             var wsId = GetWorkspaceId();
