@@ -269,7 +269,6 @@ namespace HiveonBackend.Controllers
                     return BadRequest(ex.ToString());
                 }
 
-            }
                 /* ---------------------------------------- */
                 /* SAVE MEETING                             */
                 /* ---------------------------------------- */
