@@ -28,7 +28,7 @@ export default function PmDashboard() {
     async function fetchDashboard() {
       if (!projectId) return;
       try {
-        const res = await api.get("/dashboard/pm", { params: { projectId } });
+        const res = await api.get("/pm/dashboard", { params: { projectId } });
         if (!alive) return;
         setData(res.data);
         setLoading(false);
