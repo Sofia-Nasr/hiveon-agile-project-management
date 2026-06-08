@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace HiveonBackend.Controllers
 {
@@ -16,11 +19,13 @@ namespace HiveonBackend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly GoogleCalendarService _googleCalendar;
+        private readonly IConfiguration _config;
 
-        public MeetingsController(AppDbContext context, GoogleCalendarService googleCalendar)
+        public MeetingsController(AppDbContext context, GoogleCalendarService googleCalendar, IConfiguration config)
         {
             _context = context;
             _googleCalendar = googleCalendar;
+            _config = config;
         }
 
         private bool TryGetUserId(out Guid userId)
@@ -177,6 +182,16 @@ namespace HiveonBackend.Controllers
                     return BadRequest("Google account not connected.");
                 }
 
+                // Refresh access token if expired (or about to expire)
+                if (googleConnection.ExpiresAt <= DateTime.UtcNow.AddMinutes(1))
+                {
+                    var refreshed = await TryRefreshGoogleAccessToken(googleConnection);
+                    if (!refreshed)
+                    {
+                        return BadRequest("Google token expired or invalid. Please reconnect your Google account.");
+                    }
+                }
+
                 /* ---------------------------------------- */
                 /* PROJECT                                  */
                 /* ---------------------------------------- */
@@ -223,8 +238,38 @@ namespace HiveonBackend.Controllers
                 }
                 catch (Exception ex)
                 {
+                    // If Google returned unauthorized, try refreshing once more
+                    if (ex.Message != null && ex.Message.Contains("Unauthorized", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var refreshed = await TryRefreshGoogleAccessToken(googleConnection);
+                        if (refreshed)
+                        {
+                            try
+                            {
+                                meetLink = await _googleCalendar.CreateMeetLink(
+    googleConnection.AccessToken,
+    dto.Title,
+    dto.Description,
+    dto.StartTime,
+    dto.EndTime,
+    participantEmails
+);
+                            }
+                            catch (Exception ex2)
+                            {
+                                return BadRequest(ex2.ToString());
+                            }
+                        }
+                        else
+                        {
+                            return BadRequest("Google authorization failed and token refresh did not succeed.");
+                        }
+                    }
+
                     return BadRequest(ex.ToString());
                 }
+
+            }
                 /* ---------------------------------------- */
                 /* SAVE MEETING                             */
                 /* ---------------------------------------- */
@@ -268,6 +313,54 @@ namespace HiveonBackend.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex.ToString());
+            }
+        }
+
+        // Attempt to refresh Google access token using stored refresh token
+        private async Task<bool> TryRefreshGoogleAccessToken(GoogleConnection conn)
+        {
+            try
+            {
+                if (conn == null || string.IsNullOrEmpty(conn.RefreshToken))
+                    return false;
+
+                var clientId = _config["Google:ClientId"];
+                var clientSecret = _config["Google:ClientSecret"];
+
+                using var http = new HttpClient();
+                var request = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    ["client_id"] = clientId,
+                    ["client_secret"] = clientSecret,
+                    ["refresh_token"] = conn.RefreshToken,
+                    ["grant_type"] = "refresh_token"
+                });
+
+                var resp = await http.PostAsync("https://oauth2.googleapis.com/token", request);
+                if (!resp.IsSuccessStatusCode) return false;
+
+                var json = await resp.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (!doc.RootElement.TryGetProperty("access_token", out var accessTok)) return false;
+                var accessToken = accessTok.GetString();
+
+                var expiresIn = 3600;
+                if (doc.RootElement.TryGetProperty("expires_in", out var exEl))
+                {
+                    try { expiresIn = exEl.GetInt32(); } catch { }
+                }
+
+                conn.AccessToken = accessToken ?? conn.AccessToken;
+                conn.ExpiresAt = DateTime.UtcNow.AddSeconds(expiresIn);
+
+                _context.GoogleConnections.Update(conn);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 

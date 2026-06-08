@@ -157,8 +157,6 @@ You were mentioned in a comment on Hiveon.
 Comment:
 {commentContent}
 
-View here:
-{link}
 
 — Hiveon
 "
