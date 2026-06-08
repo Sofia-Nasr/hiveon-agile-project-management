@@ -213,8 +213,49 @@ export default function PmDashboard() {
 
 // ================= BURNDOWN CHART =================
 
+function normalizeBurndownData(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    return raw
+      .filter(Boolean)
+      .map((point, index) => ({
+        label: point.label ?? point.day ?? `Day ${index + 1}`,
+        ideal: point.ideal ?? point.planned ?? 0,
+        actual: point.actual ?? point.remaining ?? 0,
+      }));
+  }
+
+  if (typeof raw === "object") {
+    if (Array.isArray(raw.data)) {
+      return raw.data.map((point, index) => ({
+        label: point.label ?? point.day ?? `Day ${index + 1}`,
+        ideal: point.ideal ?? point.planned ?? 0,
+        actual: point.actual ?? point.remaining ?? 0,
+      }));
+    }
+
+    if (Array.isArray(raw.labels) && Array.isArray(raw.ideal) && Array.isArray(raw.actual)) {
+      const count = Math.max(raw.labels.length, raw.ideal.length, raw.actual.length);
+      return Array.from({ length: count }, (_, index) => ({
+        label: raw.labels[index] ?? `Day ${index + 1}`,
+        ideal: raw.ideal[index] ?? 0,
+        actual: raw.actual[index] ?? 0,
+      }));
+    }
+
+    const keys = Object.keys(raw);
+    if (keys.length && keys.every((k) => typeof raw[k] === "number")) {
+      return keys.map((key) => ({ label: key, ideal: 0, actual: raw[key] }));
+    }
+  }
+
+  return [];
+}
+
 function BurndownChart({ data }) {
-  if (!data || !data.length) {
+  const points = normalizeBurndownData(data);
+
+  if (!points.length) {
     return (
       <div className={styles.chartEmpty}>
         No burndown data available yet
@@ -227,27 +268,27 @@ function BurndownChart({ data }) {
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
 
-  const maxVal = Math.max(...data.map((d) => Math.max(d.ideal ?? 0, d.actual ?? 0)), 1);
-  const xStep = data.length > 1 ? chartW / (data.length - 1) : chartW;
+  const maxVal = Math.max(...points.map((d) => Math.max(d.ideal ?? 0, d.actual ?? 0)), 1);
+  const xStep = points.length > 1 ? chartW / (points.length - 1) : chartW;
 
   const toX = (i) => pad.left + i * xStep;
   const toY = (v) => pad.top + chartH - (v / maxVal) * chartH;
 
-  const idealPath = data
+  const idealPath = points
     .map((d, i) => `${i === 0 ? "M" : "L"}${toX(i)},${toY(d.ideal ?? 0)}`)
     .join(" ");
 
-  const actualPath = data
+  const actualPath = points
     .map((d, i) => `${i === 0 ? "M" : "L"}${toX(i)},${toY(d.actual ?? 0)}`)
     .join(" ");
 
   const actualFillPath =
     actualPath +
-    ` L${toX(data.length - 1)},${pad.top + chartH} L${toX(0)},${pad.top + chartH} Z`;
+    ` L${toX(points.length - 1)},${pad.top + chartH} L${toX(0)},${pad.top + chartH} Z`;
 
   const idealFillPath =
     idealPath +
-    ` L${toX(data.length - 1)},${pad.top + chartH} L${toX(0)},${pad.top + chartH} Z`;
+    ` L${toX(points.length - 1)},${pad.top + chartH} L${toX(0)},${pad.top + chartH} Z`;
 
   const yTicks = 5;
   const yTickStep = maxVal / yTicks;
@@ -303,8 +344,8 @@ function BurndownChart({ data }) {
         })}
 
         {/* X-axis labels */}
-        {data.map((d, i) => {
-          if (data.length > 12 && i % 2 !== 0) return null;
+        {points.map((d, i) => {
+          if (points.length > 12 && i % 2 !== 0) return null;
           return (
             <text
               key={i}
@@ -344,7 +385,7 @@ function BurndownChart({ data }) {
         />
 
         {/* Actual dots */}
-        {data.map((d, i) => (
+        {points.map((d, i) => (
           <circle
             key={i}
             cx={toX(i)} cy={toY(d.actual ?? 0)}
